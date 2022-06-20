@@ -17,7 +17,7 @@ public class DemoApplication {
 	Quizy, generacja, wypelnianie, udostepnianie w formie linku, moze logowanie (OAuth, Spring Security)
 	Wyszukiwane slowa, wyniki quizow - zapisywane do bazy danych
 	Zaleznie od tego co wyszukujemy aplikacja moze generowac quiz
-	Testy do funkcjonalnosci
+	Testy do funkcjonalnosci.
 
 
 	// controller/words
