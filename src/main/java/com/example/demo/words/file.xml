@@ -1,0 +1,18 @@
+<entry xml:id="y-yacht">
+    <form xml:lang="en">
+        <orth>yacht</orth>
+        <pron>jɒt</pron>
+    </form>
+    <gramGrp>
+        <pos>N</pos>
+    </gramGrp>
+    <sense level="0">
+        <sense level="1">
+            <sense level="2">
+                <cit type="trans">
+                    <quote>jacht</quote>
+                </cit>
+            </sense>
+        </sense>
+    </sense>
+</entry>
