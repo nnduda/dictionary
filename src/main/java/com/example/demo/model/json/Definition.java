@@ -1,11 +1,11 @@
-package com.example.demo.words;
+package com.example.demo.model.json;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
 
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Meaning {
-    String[] synonyms;
-    Definition [] definitions;
+public class Definition {
+    String definition;
+    String example;
 }

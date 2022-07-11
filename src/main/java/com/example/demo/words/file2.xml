@@ -1,0 +1,7 @@
+<note>
+    <to attr="test">Tove</to>
+    <from>Jani</from>
+    <test>test123</test>
+    <heading>Reminder</heading>
+    <body>Don't forget me this weekend!</body>
+</note>

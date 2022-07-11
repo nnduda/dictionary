@@ -1,11 +1,12 @@
-package com.example.demo.words;
+package com.example.demo.model.json;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
 
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Definition {
-    String definition;
-    String example;
+public class Phonetic {
+    String text;
+    String audio;
+
 }

@@ -1,11 +1,11 @@
-package com.example.demo.words;
+package com.example.demo.model.json;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
 
 import javax.persistence.*;
 
-@Entity(name = "words")
+@Entity(name = "words") // TODO do zastanowienia, czy jsona chcemy zapisywac w bazie (czy tylko xml)
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Word {
@@ -17,6 +17,6 @@ public class Word {
 
     private Phonetic[] phonetics;
 
-    private Meaning [] meanings;
+    private Meaning[] meanings;
 
 }
