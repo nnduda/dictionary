@@ -1,16 +1,34 @@
-<entry xml:name="y-yacht">
+<entry xml:id="a-AA">
     <form xml:lang="en">
-        <orth>yacht</orth>
-        <pron>jɒt</pron>
+        <orth>AA</orth>
+        <pron>ˌ$⋅$ˈ$⋅$</pron>
     </form>
     <gramGrp>
-        <pos>N</pos>
+        <pos/>
     </gramGrp>
-    <sense level="0">
+    <sense level="0" n="I">
+        <xr>
+            <ref>Alcoholics Anonymous</ref>
+        </xr>
         <sense level="1">
             <sense level="2">
                 <cit type="trans">
-                    <quote>jacht</quote>
+                    <quote>Anonimowi Alkoholicy</quote>
+                </cit>
+            </sense>
+        </sense>
+    </sense>
+    <sense level="0" n="II">
+        <xr>
+            <ref>Automobile Association</ref>
+        </xr>
+        <sense level="1">
+            <sense level="2">
+                <cit type="trans">
+                    <quote>Związek Automobilowy</quote>
+                </cit>
+                <cit type="trans">
+                    <quote>Automobilklub</quote>
                 </cit>
             </sense>
         </sense>

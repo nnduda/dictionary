@@ -1,5 +1,6 @@
 package com.example.demo.words;
 
+import com.example.demo.model.xml.LetterEntries;
 import com.example.demo.model.xml.Note;
 
 import javax.xml.bind.JAXBContext;
@@ -21,26 +22,27 @@ public class UnmarshallerXml {
     {
         try
         {
-            File file = new File("src/main/java/com/example/demo/words/file2.xml");
-            //File file = new File(this.getClass().getResource(FOLDER_NAME + letter + ".xml").getPath());
-            JAXBContext jaxbContext = JAXBContext.newInstance(Note.class);
-            //JAXBContext jaxbContext = JAXBContext.newInstance(LetterEntries.class);
+            File file = new File("src/main/java/com/example/demo/words/file.xml");
+           // File file = new File(this.getClass().getResource(FOLDER_NAME + letter + ".xml").getPath());
+            //JAXBContext jaxbContext = JAXBContext.newInstance(Note.class);
+            JAXBContext jaxbContext = JAXBContext.newInstance(LetterEntries.class);
 
             Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
-            Note note = (Note) unmarshaller.unmarshal(file);
+            //Note note = (Note) unmarshaller.unmarshal(file);
 
-            if (note.getTo() != null) {
+
+/*            if (note.getTo() != null) {
                 if (note.getTo().getAttr() != null) {
                     if (note.getTo().getAttr().equals("attr")) {
                         // to co odczytamy po unmarshallingu zapiszemy do bazy danych (jako nowa encja)
                         // np.
                     }
                 }
-            }
+            }*/
 
-            //LetterEntries letterEntries = (LetterEntries) unmarshaller.unmarshal(file);
-            System.out.println(note);
-            //System.out.println(letterEntries);
+            LetterEntries letterEntries = (LetterEntries) unmarshaller.unmarshal(file);
+            //System.out.println(note);
+            System.out.println(letterEntries);
 
         }
         catch (JAXBException e)
