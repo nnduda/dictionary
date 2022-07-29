@@ -5,7 +5,8 @@
 <!--The content is licensed under GNU GFDL 1.2 or any later version.-->
 <!--This XML application is licensed under GNU GPL 3 or any later version.-->
 <!--$Id$-->
-<div xmlns="http://www.tei-c.org/ns/1.0" n="a" xml:lang="pl">
+<!--<div xmlns="http://www.tei-c.org/ns/1.0" n="a" xml:lang="pl">-->
+<div n="a" xml:lang="pl">
    <entry xml:id="a-AA">
       <form xml:lang="en">
          <orth>AA</orth>
