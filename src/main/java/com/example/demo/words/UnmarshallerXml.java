@@ -1,7 +1,6 @@
 package com.example.demo.words;
 
 import com.example.demo.model.xml.LetterEntries;
-import com.example.demo.model.xml.Note;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -22,27 +21,12 @@ public class UnmarshallerXml {
     {
         try
         {
-            File file = new File("src/main/java/com/example/demo/words/file.xml");
-           // File file = new File(this.getClass().getResource(FOLDER_NAME + letter + ".xml").getPath());
-            //JAXBContext jaxbContext = JAXBContext.newInstance(Note.class);
+            File file = new File(this.getClass().getResource(FOLDER_NAME + letter + ".xml").getPath());
             JAXBContext jaxbContext = JAXBContext.newInstance(LetterEntries.class);
 
             Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
-            //Note note = (Note) unmarshaller.unmarshal(file);
-
-
-/*            if (note.getTo() != null) {
-                if (note.getTo().getAttr() != null) {
-                    if (note.getTo().getAttr().equals("attr")) {
-                        // to co odczytamy po unmarshallingu zapiszemy do bazy danych (jako nowa encja)
-                        // np.
-                    }
-                }
-            }*/
-
             LetterEntries letterEntries = (LetterEntries) unmarshaller.unmarshal(file);
-            //System.out.println(note);
-            System.out.println(letterEntries);
+            System.out.println(letterEntries.getEntries()[0]);
 
         }
         catch (JAXBException e)
