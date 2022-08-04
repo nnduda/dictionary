@@ -2,17 +2,13 @@ package com.example.demo.model.xml;
 
 import lombok.Data;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.util.List;
 
-@Entity
+@Entity(name = "words")
 @Data
 public class Word {
     // reprezentacja xml'a w bazie danych
-    // TODO adnotacje (m.in. moze gettery/settery)
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -23,6 +19,9 @@ public class Word {
 
     private String pronunciation;
 
+    // TODO po zaladowaniu danych pokazac roznice LAZY VS EAGER
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name = "word_id") // kolumna z tablicy translations
     private List<Translation> translations;
 
 }

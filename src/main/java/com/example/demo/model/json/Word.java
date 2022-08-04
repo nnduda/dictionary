@@ -5,7 +5,6 @@ import lombok.Data;
 
 import javax.persistence.*;
 
-@Entity(name = "words") // TODO do zastanowienia, czy jsona chcemy zapisywac w bazie (czy tylko xml)
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Word {

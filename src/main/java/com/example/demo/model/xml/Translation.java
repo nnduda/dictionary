@@ -7,7 +7,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
-@Entity
+@Entity(name = "translations")
 @Data
 public class Translation {
     // TODO tak samo jak w word
@@ -15,10 +15,10 @@ public class Translation {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Type type; // TODO zrobic z tego enuma na TRANS, COLLOC itp.
+    private Type type;
 
-    private String phrase; // ?
+    private String phrase;
 
-    private String quote; // ?
+    private String quote;
 
 }
