@@ -18,8 +18,7 @@ public class Word {
     private String partOfSpeech;
 
     private String pronunciation;
-
-    // TODO po zaladowaniu danych pokazac roznice LAZY VS EAGER
+    
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "word_id") // kolumna z tablicy translations
     private List<Translation> translations;

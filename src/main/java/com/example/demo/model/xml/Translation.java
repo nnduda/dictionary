@@ -10,7 +10,6 @@ import javax.persistence.Id;
 @Entity(name = "translations")
 @Data
 public class Translation {
-    // TODO tak samo jak w word
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
