@@ -15,11 +15,11 @@ public class Cit {
     private String quote;
 
     @Getter(AccessLevel.NONE)
-    private String type;
+    private Type type;
 
     @XmlAttribute
-    public String getType() {
+    public Type getType() {
         return type;
-    } /// String type czy Type type?
+    } // TODO PYTANIE: String type czy Type type?
 }
 

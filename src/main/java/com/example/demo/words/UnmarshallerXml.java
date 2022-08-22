@@ -2,6 +2,7 @@ package com.example.demo.words;
 
 import com.example.demo.exceptions.LetterEntryNotFoundException;
 import com.example.demo.model.xml.*;
+import org.springframework.stereotype.Component;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -10,23 +11,29 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+@Component
 public class UnmarshallerXml {
     // TODO mapowanie przy uzyciu MapStruct?
-    public static void main(String[] args) {
-        UnmarshallerXml unmarshallerXml = new UnmarshallerXml();
+    private final String FOLDER_NAME = "/static/";
 
-        //  unmarshallerXml.convertXmlToObject("a");
-        List<LetterEntries> letterEntries = unmarshallerXml.getAllLetterEntries();
-        unmarshallerXml.translateLetterEntriesToEntities(letterEntries);
+    public List<Word> getEntities() {
+        List<LetterEntries> letterEntries = getAllLetterEntries();
+        List<Word> entities = getEntitiesFromLetterEntries(letterEntries);
+        return entities;
     }
 
-    // TODO metoda ktora zamienia List<LetterEntries> na wpisy w bazie danych
-    // TODO List<LetterEntries> -> Word,Translation w bazie
-    // TODO pierwszy krok: jak zamienic Entry na Word
-
-    // TODO wrzucic zmiany na GIT :)
-
-    private final String FOLDER_NAME = "/static/";
+    private List<LetterEntries> getAllLetterEntries() {
+        List<LetterEntries> entries = new ArrayList<>();
+        for (char letter = 'a'; letter <= 'z'; letter++) {
+            try {
+                LetterEntries letterEntries = convertXmlToObject(letter);
+                entries.add(letterEntries);
+            } catch (LetterEntryNotFoundException e) {
+                e.printStackTrace();
+            }
+        }
+        return entries;
+    }
 
     private LetterEntries convertXmlToObject(char letter) throws LetterEntryNotFoundException {
         try {
@@ -43,54 +50,65 @@ public class UnmarshallerXml {
         throw new LetterEntryNotFoundException();
     }
 
-    private List<LetterEntries> getAllLetterEntries() {
-        List<LetterEntries> entries = new ArrayList<>();
-        for (char letter = 'a'; letter <= 'z'; letter++) {
-            try {
-                LetterEntries letterEntries = convertXmlToObject(letter);
-                entries.add(letterEntries);
-            } catch (LetterEntryNotFoundException e) {
-                e.printStackTrace();
-            }
-        }
-        return entries;
-    }
-
-    private void translateLetterEntriesToEntities(List<LetterEntries> letterEntries) {
+    private List<Word> getEntitiesFromLetterEntries(List<LetterEntries> letterEntries) {
+        List<Word> words = new ArrayList<>();
         for (LetterEntries letterEntry : letterEntries) {
             for (Entry entry : letterEntry.getEntries()) {
                 Word word = new Word();
-                Translation translation = new Translation();
-                Form form = entry.getForm();
-                if (form != null) {
-                    word.setPronunciation(form.getPron());
-                    word.setWord(form.getOrth());
-                }
-                GramGrp gramGrp = entry.getGramGrp();
-                if (gramGrp != null) {
-                    word.setPartOfSpeech(gramGrp.getPos());
-                }
-                // TODO sprobowac :)
-                // TODO word.setPartOfSpeech();
-                // TODO word.setWord();
+                List<Translation> translations = new ArrayList<>();
+                loadFromForm(entry.getForm(), word);
+                loadFromGramGrp(entry.getGramGrp(), word);
 
-                // TODO tlumaczenia:
-                for (Sense sense : entry.getSenses()) {
-                    for(Cit cit : sense.getCits()){
-                        Type type = Type.valueOf(cit.getType());
-                        translation.setQuote(cit.getQuote());
-                        translation.setType(type);
-                        Xr xr = sense.getXr();
-                        if(xr!=null){
-                            translation.setPhrase(xr.getRef());
-                        }
-                    }
-
-                    }
-
-                }
-                // TODO word.setTranslations();
+                loadTranslationsFromSenses(translations, entry.getSenses());
+                word.setTranslations(translations);
+                words.add(word);
             }
         }
+        return words;
+    }
+
+    private void loadFromForm(Form form, Word word) {
+        if (form != null) {
+            word.setPronunciation(form.getPron());
+            word.setWord(form.getOrth());
+        }
+    }
+
+    private void loadFromGramGrp(GramGrp gramGrp, Word word) {
+        if (gramGrp != null) {
+            word.setPartOfSpeech(gramGrp.getPos());
+        }
+    }
+
+    private void loadTranslationsFromSenses(List<Translation> translations, Sense[] senses) {
+        if (senses == null) {
+            return;
+        }
+        for (Sense sense : senses) {
+            Cit[] cits = sense.getCits();
+            List<Translation> translationsFromCits = getTranslationsFromCit(sense, cits);
+            translations.addAll(translationsFromCits);
+            loadTranslationsFromSenses(translations, sense.getSenses());
+        }
+    }
+
+    private List<Translation> getTranslationsFromCit(Sense sense, Cit[] cits) {
+        List<Translation> translations = new ArrayList<>();
+        if (cits != null) {
+            for (Cit cit : cits) {
+                Translation translation = new Translation();
+                Type type = cit.getType();
+                translation.setQuote(cit.getQuote());
+                translation.setType(type);
+                Xr xr = sense.getXr();
+                // XR zawiera rozwiniecie skrotu
+                if (xr != null && !type.equals(Type.COLLOC)) {
+                    translation.setPhrase(xr.getRef());
+                }
+                translations.add(translation);
+            }
+        }
+        return translations;
     }
 }
+
