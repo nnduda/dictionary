@@ -12,10 +12,14 @@ Words template
     <tr>
         <th>Id</th>
         <th>Word</th>
+        <th>Part Of Speech</th>
+        <th>Pronunciation</th>
     </tr>
     <tr th:each="word : ${words}">
         <td th:text="${word.id}"/>
         <td th:text="${word.word}"/>
+        <td th:text="${word.partOfSpeech}"/>
+        <td th:text="${word.pronunciation}"/>
     </tr>
 </table>
 

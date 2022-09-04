@@ -2,8 +2,10 @@ package com.example.demo.words;
 
 import com.example.demo.exceptions.LetterEntryNotFoundException;
 import com.example.demo.model.xml.*;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
@@ -14,9 +16,17 @@ import java.util.List;
 @Component
 public class UnmarshallerXml {
     // TODO mapowanie przy uzyciu MapStruct?
+    @Autowired
+    WordsRepository wordsRepository;
     private final String FOLDER_NAME = "/static/";
 
-    public List<Word> getEntities() {
+    @PostConstruct
+    private void postConstruct() {
+        List<Word> entities = getEntities();
+        wordsRepository.saveAll(entities);
+    }
+
+    private List<Word> getEntities() {
         List<LetterEntries> letterEntries = getAllLetterEntries();
         List<Word> entities = getEntitiesFromLetterEntries(letterEntries);
         return entities;
