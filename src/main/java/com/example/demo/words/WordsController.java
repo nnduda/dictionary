@@ -16,15 +16,12 @@ import java.util.Optional;
 public class WordsController {
 
     private WordsRepository wordsRepository;
+    private WordsService wordsService;
 
     @Autowired
-    public WordsController(WordsRepository wordsRepository) {
+    public WordsController(WordsRepository wordsRepository, WordsService wordsService) {
         this.wordsRepository = wordsRepository;
-    }
-
-    @GetMapping("/test")
-    public String test() {
-        return "abc";
+        this.wordsService = wordsService;
     }
 
     @GetMapping()
@@ -32,6 +29,12 @@ public class WordsController {
         model.addAttribute("words", wordsRepository.findAll());
         return "words"; // words.html
         // jesli chcelibysmy uzyc metody 3 (bez podawania sciezki) potrzebny bedzie template resolver
+    }
+
+    @GetMapping(value = "/word")
+    public ResponseEntity<String> getWord(@RequestParam("word") String word) {
+        String words = wordsService.getWords(word);
+        return ResponseEntity.ok(words);
     }
 
     @GetMapping(value = "/{id}")
@@ -66,10 +69,8 @@ public class WordsController {
     }
 
     @GetMapping("/translationsObject")
-    public ResponseEntity<Word[]> getFromExternalApiToObject(@RequestParam String name) {
-        String url = "https://api.dictionaryapi.dev/api/v2/entries/en/" + name;
-        RestTemplate restTemplate = new RestTemplate();
-        ResponseEntity<Word[]> response = restTemplate.getForEntity(url, Word[].class);
-        return response;
+    public ResponseEntity<com.example.demo.model.json.Word[]> getFromExternalApiToObject(@RequestParam String name) {
+        com.example.demo.model.json.Word[] words = wordsService.getWordsFromExternalApi(name);
+        return ResponseEntity.of(Optional.of(words));
     }
 }
