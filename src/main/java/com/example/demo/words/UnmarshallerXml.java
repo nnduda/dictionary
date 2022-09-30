@@ -15,7 +15,9 @@ import java.util.List;
 
 @Component
 public class UnmarshallerXml {
-    // TODO mapowanie przy uzyciu MapStruct?
+    // TODO BUG - niektore slowa nie maja wpisanej czesci mowy (PartOfSpeech - N,V) bo wystepuje ona w Sense
+    // kiedy dla roznych Sense mamy rozne czesci mowy, chcielibysmy zrobic z tego dwa osobne rekordy
+    // przykladowe slowka end, clean
     @Autowired
     WordsRepository wordsRepository;
     private final String FOLDER_NAME = "/static/";
