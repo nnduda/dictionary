@@ -15,10 +15,10 @@ public class Word {
 
     private String word;
 
-    private String partOfSpeech;
+    private List<String> partsOfSpeech; // TODO jak zapisac to do tablicy, czy potrzebujemy nowej?
 
     private String pronunciation;
-    
+
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "word_id") // kolumna z tablicy translations
     private List<Translation> translations;

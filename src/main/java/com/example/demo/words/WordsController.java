@@ -32,9 +32,9 @@ public class WordsController {
     }
 
     @GetMapping(value = "/word")
-    public ResponseEntity<String> getWord(@RequestParam("word") String word) {
-        String words = wordsService.getWords(word);
-        return ResponseEntity.ok(words);
+    public ResponseEntity<MainWord> getWord(@RequestParam("word") String word) {
+        MainWord mainWord = wordsService.getWord(word);
+        return ResponseEntity.ok(mainWord);
     }
 
     @GetMapping(value = "/{id}")

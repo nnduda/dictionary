@@ -5,7 +5,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.Arrays;
 import java.util.List;
 
 import static java.util.Objects.isNull;
@@ -25,16 +24,11 @@ public class WordsService {
         this.restTemplate = restTemplate;
     }
 
-    public String getWords(String word) {
+    public MainWord getWord(String word) {
         com.example.demo.model.xml.Word[] wordsFromDatabase = getWordsFromDatabase(word);
         com.example.demo.model.json.Word[] wordsFromExternalApi = getWordsFromExternalApi(word);
-        MainWord mw = new MainWord(word, wordsFromDatabase, wordsFromExternalApi);
-        // TODO wspolny obiekt na obie te dane
-        // ^ co powinien zawierac taki wspolny obiekt?
-        String stringFromDatabase = Arrays.toString(wordsFromDatabase);
-        //String stringFromExternalApi = Arrays.toString(wordsFromExternalApi);
-        //return stringFromDatabase + stringFromExternalApi;
-        return stringFromDatabase;
+        MainWord mainWord = new MainWord(word, wordsFromDatabase, wordsFromExternalApi);
+        return mainWord;
     }
 
     public com.example.demo.model.xml.Word[] getWordsFromDatabase(String name) {

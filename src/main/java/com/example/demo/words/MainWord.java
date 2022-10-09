@@ -2,6 +2,7 @@ package com.example.demo.words;
 
 import com.example.demo.model.json.Meaning;
 import com.example.demo.model.json.Phonetic;
+import com.example.demo.model.json.Word;
 import com.example.demo.model.xml.Translation;
 import lombok.Getter;
 import lombok.Setter;
@@ -25,7 +26,8 @@ public class MainWord {
         this.word = word;
         if (wordsFromDatabase.length != 0) {
             this.partOfSpeech = Arrays.stream(wordsFromDatabase)
-                    .map(w -> w.getPartOfSpeech())
+                    .map(w -> w.getPartsOfSpeech())
+                    .flatMap(List::stream)
                     .collect(Collectors.toList());
             this.pronunciation = wordsFromDatabase[0].getPronunciation();
             this.translations = Arrays.stream(wordsFromDatabase)
@@ -33,13 +35,12 @@ public class MainWord {
                     .collect(Collectors.toList());
             this.phonetics = Arrays.stream(wordsFromExternalApi)
                     .map(w -> w.getPhonetics())
-
+                    .flatMap(Arrays::stream) // Stream<Phonetic[]> -> Stream<Phonetic> // flatten
                     .collect(Collectors.toList());
-
             this.meanings = Arrays.stream(wordsFromExternalApi)
-                    .map(w -> w.getMeanings())
-
-
+                    .map(Word::getMeanings)
+                    .flatMap(Arrays::stream) // Stream<Phonetic[]> -> Stream<Phonetic> // flatten
+                    .collect(Collectors.toList());
         }
     }
 }

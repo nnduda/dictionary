@@ -11,6 +11,8 @@ import javax.xml.bind.annotation.XmlElement;
 @Data
 @XmlAccessorType(XmlAccessType.PROPERTY)
 public class Sense {
+
+    private GramGrp gramGrp;
     private Xr xr;
 
     @Getter(AccessLevel.NONE)
@@ -28,4 +30,6 @@ public class Sense {
     public Sense[] getSenses() {
         return senses;
     }
+
+
 }

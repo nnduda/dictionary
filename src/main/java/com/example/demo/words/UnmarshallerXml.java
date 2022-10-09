@@ -18,6 +18,7 @@ public class UnmarshallerXml {
     // TODO BUG - niektore slowa nie maja wpisanej czesci mowy (PartOfSpeech - N,V) bo wystepuje ona w Sense
     // kiedy dla roznych Sense mamy rozne czesci mowy, chcielibysmy zrobic z tego dwa osobne rekordy
     // przykladowe slowka end, clean
+    // dla slowa 'cat' sa dwie czesci mowy z czego jedna jest nullem - do sprawdzenia
     @Autowired
     WordsRepository wordsRepository;
     private final String FOLDER_NAME = "/static/";
@@ -71,7 +72,7 @@ public class UnmarshallerXml {
                 loadFromForm(entry.getForm(), word);
                 loadFromGramGrp(entry.getGramGrp(), word);
 
-                loadTranslationsFromSenses(translations, entry.getSenses());
+                loadTranslationsFromSenses(translations, entry.getSenses(), word);
                 word.setTranslations(translations);
                 words.add(word);
             }
@@ -88,19 +89,23 @@ public class UnmarshallerXml {
 
     private void loadFromGramGrp(GramGrp gramGrp, Word word) {
         if (gramGrp != null) {
-            word.setPartOfSpeech(gramGrp.getPos());
+            word.getPartsOfSpeech().add(gramGrp.getPos()); // TODO czy mozna uproscic?
         }
     }
 
-    private void loadTranslationsFromSenses(List<Translation> translations, Sense[] senses) {
+    private void loadTranslationsFromSenses(List<Translation> translations, Sense[] senses, Word word) {
         if (senses == null) {
             return;
         }
         for (Sense sense : senses) {
             Cit[] cits = sense.getCits();
+            GramGrp gramGrp = sense.getGramGrp();
+            if (gramGrp != null) {
+                word.getPartsOfSpeech().add(gramGrp.getPos()); // TODO czy mozna uproscic?
+            }
             List<Translation> translationsFromCits = getTranslationsFromCit(sense, cits);
             translations.addAll(translationsFromCits);
-            loadTranslationsFromSenses(translations, sense.getSenses());
+            loadTranslationsFromSenses(translations, sense.getSenses(), word);
         }
     }
 
