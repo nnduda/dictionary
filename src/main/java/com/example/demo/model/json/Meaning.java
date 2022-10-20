@@ -6,6 +6,7 @@ import lombok.Data;
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Meaning {
+    String partOfSpeech;
     String[] synonyms;
     Definition[] definitions;
 }

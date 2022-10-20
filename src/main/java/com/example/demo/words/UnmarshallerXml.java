@@ -70,9 +70,13 @@ public class UnmarshallerXml {
                 Word word = new Word();
                 List<Translation> translations = new ArrayList<>();
                 loadFromForm(entry.getForm(), word);
-                loadFromGramGrp(entry.getGramGrp(), word);
 
-                loadTranslationsFromSenses(translations, entry.getSenses(), word);
+                // TODO jak poprawnie uzupelniac PartOfSpeech kiedy jest ich wiele
+                // dla roznych sense sa rozne wartosci (aktualnie null)
+                // trzeba by bylo przesylac znaleziony pos nizej do kolejnych sense'ow
+                loadTranslationsFromSenses(translations, entry.getSenses());
+                loadFromGramGrp(entry.getGramGrp(), translations);
+
                 word.setTranslations(translations);
                 words.add(word);
             }
@@ -87,25 +91,24 @@ public class UnmarshallerXml {
         }
     }
 
-    private void loadFromGramGrp(GramGrp gramGrp, Word word) {
+    private void loadFromGramGrp(GramGrp gramGrp, List<Translation> translations) {
         if (gramGrp != null) {
-            word.getPartsOfSpeech().add(gramGrp.getPos()); // TODO czy mozna uproscic?
+            String pos = gramGrp.getPos();
+            translations.forEach(t -> t.setPartOfSpeech(pos));
         }
     }
 
-    private void loadTranslationsFromSenses(List<Translation> translations, Sense[] senses, Word word) {
+    private void loadTranslationsFromSenses(List<Translation> translations, Sense[] senses) {
         if (senses == null) {
             return;
         }
         for (Sense sense : senses) {
             Cit[] cits = sense.getCits();
             GramGrp gramGrp = sense.getGramGrp();
-            if (gramGrp != null) {
-                word.getPartsOfSpeech().add(gramGrp.getPos()); // TODO czy mozna uproscic?
-            }
             List<Translation> translationsFromCits = getTranslationsFromCit(sense, cits);
+            loadFromGramGrp(gramGrp, translationsFromCits);
             translations.addAll(translationsFromCits);
-            loadTranslationsFromSenses(translations, sense.getSenses(), word);
+            loadTranslationsFromSenses(translations, sense.getSenses());
         }
     }
 

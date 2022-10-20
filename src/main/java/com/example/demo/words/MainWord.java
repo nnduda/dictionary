@@ -16,7 +16,6 @@ import java.util.stream.Collectors;
 public class MainWord {
 
     private String word;
-    private List<String> partOfSpeech;
     private String pronunciation;
     private List<List<Translation>> translations;
     private List<Phonetic> phonetics;
@@ -25,10 +24,6 @@ public class MainWord {
     public MainWord(String word, com.example.demo.model.xml.Word[] wordsFromDatabase, com.example.demo.model.json.Word[] wordsFromExternalApi) {
         this.word = word;
         if (wordsFromDatabase.length != 0) {
-            this.partOfSpeech = Arrays.stream(wordsFromDatabase)
-                    .map(w -> w.getPartsOfSpeech())
-                    .flatMap(List::stream)
-                    .collect(Collectors.toList());
             this.pronunciation = wordsFromDatabase[0].getPronunciation();
             this.translations = Arrays.stream(wordsFromDatabase)
                     .map(w -> w.getTranslations())

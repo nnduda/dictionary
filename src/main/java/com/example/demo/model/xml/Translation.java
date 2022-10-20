@@ -20,4 +20,7 @@ public class Translation {
 
     private String quote;
 
+    private String partOfSpeech;
+
+
 }
