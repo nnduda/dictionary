@@ -20,6 +20,6 @@ public class Cit {
     @XmlAttribute
     public Type getType() {
         return type;
-    } // TODO PYTANIE: String type czy Type type?
+    }
 }
 

@@ -12,16 +12,14 @@ import javax.xml.bind.Unmarshaller;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Component
+@SuppressWarnings("unused")
 public class UnmarshallerXml {
-    // TODO BUG - niektore slowa nie maja wpisanej czesci mowy (PartOfSpeech - N,V) bo wystepuje ona w Sense
-    // kiedy dla roznych Sense mamy rozne czesci mowy, chcielibysmy zrobic z tego dwa osobne rekordy
-    // przykladowe slowka end, clean
-    // dla slowa 'cat' sa dwie czesci mowy z czego jedna jest nullem - do sprawdzenia
     @Autowired
     WordsRepository wordsRepository;
-    private final String FOLDER_NAME = "/static/";
+    private static final String FOLDER_NAME = "/static/";
 
     @PostConstruct
     private void postConstruct() {
@@ -70,12 +68,7 @@ public class UnmarshallerXml {
                 Word word = new Word();
                 List<Translation> translations = new ArrayList<>();
                 loadFromForm(entry.getForm(), word);
-
-                // TODO jak poprawnie uzupelniac PartOfSpeech kiedy jest ich wiele
-                // dla roznych sense sa rozne wartosci (aktualnie null)
-                // trzeba by bylo przesylac znaleziony pos nizej do kolejnych sense'ow
-                loadTranslationsFromSenses(translations, entry.getSenses());
-                loadFromGramGrp(entry.getGramGrp(), translations);
+                loadTranslationsFromSenses(translations, entry.getSenses(), entry.getGramGrp());
 
                 word.setTranslations(translations);
                 words.add(word);
@@ -98,17 +91,19 @@ public class UnmarshallerXml {
         }
     }
 
-    private void loadTranslationsFromSenses(List<Translation> translations, Sense[] senses) {
+    private void loadTranslationsFromSenses(List<Translation> translations, Sense[] senses, GramGrp previousGramGrp) {
         if (senses == null) {
             return;
         }
         for (Sense sense : senses) {
             Cit[] cits = sense.getCits();
             GramGrp gramGrp = sense.getGramGrp();
+            gramGrp = Optional.ofNullable(gramGrp).orElse(previousGramGrp);
+
             List<Translation> translationsFromCits = getTranslationsFromCit(sense, cits);
             loadFromGramGrp(gramGrp, translationsFromCits);
             translations.addAll(translationsFromCits);
-            loadTranslationsFromSenses(translations, sense.getSenses());
+            loadTranslationsFromSenses(translations, sense.getSenses(), gramGrp);
         }
     }
 
