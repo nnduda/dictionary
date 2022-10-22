@@ -1,1 +1,0 @@
-INSERT INTO translations (phrase, word_id) values ('pies', 1);
