@@ -1,4 +1,4 @@
-package com.example.demo.words;
+package com.example.demo.model;
 
 import com.example.demo.model.json.Meaning;
 import com.example.demo.model.json.Phonetic;

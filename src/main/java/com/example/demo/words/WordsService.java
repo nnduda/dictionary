@@ -1,5 +1,6 @@
 package com.example.demo.words;
 
+import com.example.demo.model.MainWord;
 import com.example.demo.model.json.Word;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
