@@ -45,4 +45,12 @@ public class WordsService {
         }
         return words;
     }
+
+    public boolean save(com.example.demo.model.xml.Word word) {
+        com.example.demo.model.xml.Word w = wordsRepository.save(word);
+        return true;
+    }
+
 }
+
+
