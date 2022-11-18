@@ -1,7 +1,5 @@
-package com.example.demo.model;
+package com.example.demo.words;
 
-import com.example.demo.words.WordsRepository;
-import com.example.demo.words.WordsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.client.RestTemplate;
 

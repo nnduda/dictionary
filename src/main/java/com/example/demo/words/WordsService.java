@@ -51,6 +51,12 @@ public class WordsService {
         return true;
     }
 
+    // przyklad
+    public void saveWithNote(com.example.demo.model.xml.Word word, String note) {
+        NotesService notesService = new NotesService();
+        notesService.addNote(word, note);
+    }
+
 }
 
 

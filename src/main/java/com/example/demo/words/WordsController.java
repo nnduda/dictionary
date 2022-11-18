@@ -23,10 +23,13 @@ public class WordsController {
     private WordsRepository wordsRepository;
     private WordsService wordsService;
 
+    private WordExtrasRepository wordExtrasRepository;
+
     @Autowired
-    public WordsController(WordsRepository wordsRepository, WordsService wordsService) {
+    public WordsController(WordsRepository wordsRepository, WordsService wordsService, WordExtrasRepository wordExtrasRepository) {
         this.wordsRepository = wordsRepository;
         this.wordsService = wordsService;
+        this.wordExtrasRepository = wordExtrasRepository;
     }
 
     @GetMapping()
@@ -84,7 +87,7 @@ public class WordsController {
      */
 
     @GetMapping(value = "/test1")
-    public ResponseEntity<Word> save1() {
+    public ResponseEntity<String> save1() {
         // zapis slowa z powiazanymi informacjami
         Word word = new Word();
         word.setWord("abc");
@@ -93,38 +96,51 @@ public class WordsController {
         word.setTranslations(List.of(translation));
         WordExtras wordExtras = new WordExtras();
         wordExtras.setValue("abc");
+        wordExtras.setWord(word);
         List<WordExtras> wordExtrasList = new ArrayList<>();
         wordExtrasList.add(wordExtras);
         //word.setWordExtrasList(List.of(wordExtras));
         word.setWordExtrasList(wordExtrasList);
         wordsRepository.save(word); // to zapisze do wszystkich tabel powiazanych
         // nie trzeba tworzyc ilus osobnych repozytoriow
-        return ResponseEntity.ok(word);
+        return ResponseEntity.ok(word.toString());
     }
 
-    @GetMapping("/test")
-    public ResponseEntity<Word> save2() {
+    @GetMapping("/test2")
+    public ResponseEntity<String> save2() {
         // aktualizacja slowa 'abc' - dodanie WordExtras
         Word[] words = wordsService.getWordsFromDatabase("abc");
         if (words != null) {
+            Word word = words[0];
             WordExtras wordExtras = new WordExtras();
             wordExtras.setValue("def");
-            Word word = words[0];
+            wordExtras.setWord(word);
             // najpierw odczytujemy liste z elementami ktore juz sa w bazie
             List<WordExtras> wordExtrasList = word.getWordExtrasList();
             wordExtrasList.add(wordExtras); // dodajemy kolejny element
             // nie potrzebujemy robic set, bo operujemy caly czas na jednej liscie
             //word.setWordExtrasList(wordExtrasList);
             wordsRepository.save(word); //
-            return ResponseEntity.ok(word);
+            return ResponseEntity.ok(word.toString());
         }
         return ResponseEntity.notFound().build();
     }
 
-    // TODO
-    /*
-    jak zrobic to samo co w save2 tylko nie zapisujac calego slowa na nowo
-    czyli nie robic wordsRepository.save(word)
+    @GetMapping("/test3")
+    public ResponseEntity<String> save3() {
+        Word[] words = wordsService.getWordsFromDatabase("abc");
+        if (words != null) {
+            Word word = words[0];
+            WordExtras wordExtras = new WordExtras();
+            wordExtras.setValue("ghi");
+            wordExtras.setWord(word);
+            wordExtrasRepository.save(wordExtras);
 
-     */
+            // sprawdzenie czy dodalo sie poprawnie:
+            words = wordsService.getWordsFromDatabase("abc");
+            word = words[0];
+            return ResponseEntity.ok(word.toString());
+        }
+        return ResponseEntity.notFound().build();
+    }
 }

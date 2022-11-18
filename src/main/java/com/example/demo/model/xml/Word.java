@@ -22,8 +22,7 @@ public class Word {
     @JoinColumn(name = "word_id") // kolumna z tablicy translations
     private List<Translation> translations;
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinColumn(name = "word_id")
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "word")
     private List<WordExtras> wordExtrasList;
 }
 
