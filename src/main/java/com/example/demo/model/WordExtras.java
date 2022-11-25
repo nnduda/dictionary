@@ -1,18 +1,15 @@
 package com.example.demo.model;
 
 import com.example.demo.model.xml.Word;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
+import lombok.ToString;
 
 import javax.persistence.*;
 
 @Entity(name = "word_extras")
-@Getter
-@Setter
-@EqualsAndHashCode
-@RequiredArgsConstructor
+@Data
 public class WordExtras {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,18 +21,10 @@ public class WordExtras {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "word_id")
+    @JsonBackReference
+    //@JsonIgnore // alternatywnie zamiast Json*Reference
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private Word word;
 
-    @Override
-    public String toString() {
-        return "WordExtras{" +
-                "id=" + id +
-                ", extrasType=" + extrasType +
-                ", value='" + value +
-                '}';
-    }
-
-    // TODO stworzyc serwis ktory potrafi zapisywac te dane
-    // stworzyc endpoint do testowania czy dziala
-    // + jak dodawac slowa i tlumaczenia, i w jakim serwisie
 }

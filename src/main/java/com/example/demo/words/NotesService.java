@@ -25,23 +25,10 @@ public class NotesService {
         addNote(wordExtras.getId(), ReferenceTableType.WORDS, note);
     }
 
-    // TODO ^dokonczyc na pozostale encje
-
     private void addNote(Long referenceTableId, ReferenceTableType referenceTableType, String note) {
-        switch (referenceTableType) {
-            case WORDS -> {
-                Note noteWord = new Note(ReferenceTableType.WORDS, referenceTableId, note);
-                noteRepository.save(noteWord);
-            }
-            case WORD_EXTRAS -> {
-                Note noteWordExtras = new Note(ReferenceTableType.WORD_EXTRAS, referenceTableId, note);
-                noteRepository.save(noteWordExtras);
-            }
-            case TRANSLATIONS -> {
-                Note noteTranslations = new Note(ReferenceTableType.TRANSLATIONS, referenceTableId, note);
-                noteRepository.save(noteTranslations);
-            }
-        }
-        // TODO dokonczyc
+        Note noteWord = new Note(referenceTableType, referenceTableId, note);
+        noteRepository.save(noteWord);
     }
+
+    // TODO metoda find do wyszukiwania notatek
 }

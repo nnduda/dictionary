@@ -10,6 +10,8 @@ public class WordExtrasService {
 
     WordsService wordsService;
 
+    // TODO ^zastanowic sie ktore pola faktycznie sa potrzebne
+    
     @Autowired
     public WordExtrasService(WordsRepository wordsRepository, RestTemplate restTemplate) {
         this.wordsRepository = wordsRepository;

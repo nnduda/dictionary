@@ -1,6 +1,7 @@
 package com.example.demo.model.xml;
 
 import com.example.demo.model.WordExtras;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -23,6 +24,7 @@ public class Word {
     private List<Translation> translations;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "word")
+    @JsonManagedReference
     private List<WordExtras> wordExtrasList;
 }
 

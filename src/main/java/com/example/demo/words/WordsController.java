@@ -120,14 +120,14 @@ public class WordsController {
             wordExtrasList.add(wordExtras); // dodajemy kolejny element
             // nie potrzebujemy robic set, bo operujemy caly czas na jednej liscie
             //word.setWordExtrasList(wordExtrasList);
-            wordsRepository.save(word); //
+            wordsRepository.save(word); // TODO zamiana na wywolanie metody z serwisu
             return ResponseEntity.ok(word.toString());
         }
         return ResponseEntity.notFound().build();
     }
 
     @GetMapping("/test3")
-    public ResponseEntity<String> save3() {
+    public ResponseEntity<Word> save3() {
         Word[] words = wordsService.getWordsFromDatabase("abc");
         if (words != null) {
             Word word = words[0];
@@ -135,11 +135,15 @@ public class WordsController {
             wordExtras.setValue("ghi");
             wordExtras.setWord(word);
             wordExtrasRepository.save(wordExtras);
+            /*
+            TODO zamienic wordExtrasRepository.save(wordExtras) na zapis z uzyciem serwisu WordExtrasService
+            tak zeby nie dotykac tutaj bezposrednio repozytorium
+             */
 
             // sprawdzenie czy dodalo sie poprawnie:
             words = wordsService.getWordsFromDatabase("abc");
             word = words[0];
-            return ResponseEntity.ok(word.toString());
+            return ResponseEntity.ok(word);
         }
         return ResponseEntity.notFound().build();
     }
