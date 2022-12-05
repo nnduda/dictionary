@@ -1,21 +1,20 @@
 package com.example.demo.words;
 
+import com.example.demo.model.WordExtras;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.stereotype.Service;
 
+@Service
 public class WordExtrasService {
-    WordsRepository wordsRepository;
+    WordExtrasRepository wordExtrasRepository;
 
-    RestTemplate restTemplate;
-
-    WordsService wordsService;
-
-    // TODO ^zastanowic sie ktore pola faktycznie sa potrzebne
-    
     @Autowired
-    public WordExtrasService(WordsRepository wordsRepository, RestTemplate restTemplate) {
-        this.wordsRepository = wordsRepository;
-        this.restTemplate = restTemplate;
+    public WordExtrasService(WordExtrasRepository wordExtrasRepository) {
+        this.wordExtrasRepository = wordExtrasRepository;
+    }
+
+    public WordExtras save(WordExtras wordExtras) {
+        return wordExtrasRepository.save(wordExtras);
     }
 
 

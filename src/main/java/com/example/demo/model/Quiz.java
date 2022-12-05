@@ -1,25 +1,24 @@
 package com.example.demo.model;
 
+import lombok.Data;
+
 import java.util.List;
 
 /**
  * quiz angielsko-polski, angielskie slowa i polskie tlumaczenia z xml'a jako odpowiedzi
  * quiz angielsko-angielski, dane bardziej z jsona
  */
+@Data
 public class Quiz {
 
-    List<String> words;
-    List<List<String>> answers;
-    List<Integer> correctAnswers; // numery poprawnych odpowiedzi, mogloby to tez byc List<String>
-    // TODO stworzyc enumy z ponizszych:
-    QuizType quizType; // TRANSLATIONS,MEANINGS
-    QuizDataType quizDataType; // RANDOM, PRESELECT, PRESEARCHED
+    private List<String> words;
+    private List<List<String>> answers;
+    private List<Integer> correctAnswers; // numery poprawnych odpowiedzi, mogloby to tez byc List<String>
+    private QuizType quizType;
+    private QuizDataType quizDataType;
 
-    /*
-    TODO (na zajecia) serwis do tworzenia quizow
-    moze repozytorium, na quizy, na linki
-
-    docelowo UI do potestowania
-     */
-
+    public Quiz(QuizType quizType, QuizDataType quizDataType) {
+        this.quizType = quizType;
+        this.quizDataType = quizDataType;
+    }
 }

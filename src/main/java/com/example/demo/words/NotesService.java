@@ -22,7 +22,7 @@ public class NotesService {
     }
 
     public void addNote(WordExtras wordExtras, String note) {
-        addNote(wordExtras.getId(), ReferenceTableType.WORDS, note);
+        addNote(wordExtras.getId(), ReferenceTableType.WORD_EXTRAS, note);
     }
 
     private void addNote(Long referenceTableId, ReferenceTableType referenceTableType, String note) {
@@ -31,4 +31,8 @@ public class NotesService {
     }
 
     // TODO metoda find do wyszukiwania notatek
+    // wyszukiwanie na podstawie slowa/tlumaczenia/dodatku - bo to bedziemy znali chcac zobaczyc notatke
+    public void find(Long id) {
+        noteRepository.findById(id);
+    }
 }

@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
+import java.util.Optional;
 
 import static java.util.Objects.isNull;
 
@@ -46,15 +47,19 @@ public class WordsService {
         return words;
     }
 
-    public boolean save(com.example.demo.model.xml.Word word) {
-        com.example.demo.model.xml.Word w = wordsRepository.save(word);
-        return true;
+    public com.example.demo.model.xml.Word save(com.example.demo.model.xml.Word word) {
+        return wordsRepository.save(word);
     }
 
     // przyklad
     public void saveWithNote(com.example.demo.model.xml.Word word, String note) {
         NotesService notesService = new NotesService();
         notesService.addNote(word, note);
+    }
+
+    // TODO zastanowic sie czy nie da sie wyciagnac z bazy wylacznie jednego pola
+    public Optional<com.example.demo.model.xml.Word> getWordById(Long id) {
+        return wordsRepository.findById(id);
     }
 
 }

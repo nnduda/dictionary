@@ -22,14 +22,13 @@ public class WordsController {
 
     private WordsRepository wordsRepository;
     private WordsService wordsService;
-
-    private WordExtrasRepository wordExtrasRepository;
+    private WordExtrasService wordExtrasService;
 
     @Autowired
-    public WordsController(WordsRepository wordsRepository, WordsService wordsService, WordExtrasRepository wordExtrasRepository) {
+    public WordsController(WordsRepository wordsRepository, WordsService wordsService, WordExtrasService wordExtrasService) {
         this.wordsRepository = wordsRepository;
         this.wordsService = wordsService;
-        this.wordExtrasRepository = wordExtrasRepository;
+        this.wordExtrasService = wordExtrasService;
     }
 
     @GetMapping()
@@ -120,7 +119,7 @@ public class WordsController {
             wordExtrasList.add(wordExtras); // dodajemy kolejny element
             // nie potrzebujemy robic set, bo operujemy caly czas na jednej liscie
             //word.setWordExtrasList(wordExtrasList);
-            wordsRepository.save(word); // TODO zamiana na wywolanie metody z serwisu
+            wordsService.save(word);
             return ResponseEntity.ok(word.toString());
         }
         return ResponseEntity.notFound().build();
@@ -134,11 +133,8 @@ public class WordsController {
             WordExtras wordExtras = new WordExtras();
             wordExtras.setValue("ghi");
             wordExtras.setWord(word);
-            wordExtrasRepository.save(wordExtras);
-            /*
-            TODO zamienic wordExtrasRepository.save(wordExtras) na zapis z uzyciem serwisu WordExtrasService
-            tak zeby nie dotykac tutaj bezposrednio repozytorium
-             */
+            // wordExtrasRepository.save(wordExtras);
+            wordExtrasService.save(wordExtras);
 
             // sprawdzenie czy dodalo sie poprawnie:
             words = wordsService.getWordsFromDatabase("abc");
