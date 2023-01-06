@@ -57,11 +57,18 @@ public class WordsService {
         notesService.addNote(word, note);
     }
 
-    // TODO zastanowic sie czy nie da sie wyciagnac z bazy wylacznie jednego pola
+    // TODO zadanie - ciekawostka
+    // TODO jak wyciagnac z bazy wylacznie jedno pole
     public Optional<com.example.demo.model.xml.Word> getWordById(Long id) {
+
+        // wordsRepository.findById(id); - wyszukuje cale slowo (wszystkie kolumny dla danego rekordu)
+        // jak pobrac wartosc z jednej kolumny?
         return wordsRepository.findById(id);
     }
 
+    public List<com.example.demo.model.xml.Word> getWords() {
+        return wordsRepository.getWords();
+    }
 }
 
 

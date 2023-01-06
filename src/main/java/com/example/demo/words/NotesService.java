@@ -8,6 +8,8 @@ import com.example.demo.model.xml.Word;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class NotesService {
     @Autowired
@@ -32,7 +34,7 @@ public class NotesService {
 
     // TODO metoda find do wyszukiwania notatek
     // wyszukiwanie na podstawie slowa/tlumaczenia/dodatku - bo to bedziemy znali chcac zobaczyc notatke
-    public void find(Long id) {
-        noteRepository.findById(id);
+    public void find(ReferenceTableType referenceTableType) { // , Long referenceTableId)
+        List<Note> notes = noteRepository.findByReferenceTable(referenceTableType);
     }
 }
