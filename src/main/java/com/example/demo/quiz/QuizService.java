@@ -1,8 +1,10 @@
 package com.example.demo.quiz;
 
+import com.example.demo.exceptions.AnswerNotFoundException;
 import com.example.demo.model.Quiz;
 import com.example.demo.model.QuizDataType;
 import com.example.demo.model.QuizType;
+import com.example.demo.model.xml.Translation;
 import com.example.demo.model.xml.Word;
 import com.example.demo.words.WordsService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +25,12 @@ public class QuizService {
     public Quiz createRandomQuiz() {
         Quiz quiz = new Quiz(QuizType.TRANSLATIONS, QuizDataType.RANDOM);
         List<Long> wordsIds = setWordsAndGetWordsIds(quiz);
-        prepareAnswers(quiz, wordsIds);
+        try {
+            prepareAnswers(quiz, wordsIds);
+        } catch (AnswerNotFoundException e) {
+            System.out.println("Nie znaleziono odpowiedzi dla slowa o id " + e.getId());
+            e.printStackTrace();
+        }
         return quiz;
     }
 
@@ -31,8 +38,9 @@ public class QuizService {
         List<String> words = new ArrayList<>();
         List<Long> wordsIds = new ArrayList<>();
         Random random = new Random();
+        long numWords = wordsService.countWords();
         while (words.size() < 10) {
-            Optional<Word> word = wordsService.getWordById(random.nextLong());
+            Optional<Word> word = wordsService.getWordById(random.nextLong() % numWords);
             if (word.isPresent()) {
                 words.add(word.get().getWord());
                 wordsIds.add(word.get().getId());
@@ -54,7 +62,7 @@ public class QuizService {
     }
 
     // TODO spojrzec na kod i przypomniec sobie jak dziala
-    private void prepareAnswers(Quiz quiz, List<Long> wordsIds) { // wordsIds - identyfikatory slow: "dog","cat","turtle","lion","fish"
+    private void prepareAnswers(Quiz quiz, List<Long> wordsIds) throws AnswerNotFoundException { // wordsIds - identyfikatory slow: "dog","cat","turtle","lion","fish"
         List<String> answers = new ArrayList<>(); // wylosowane odpowiedzi do danego slowa
         int correctAnswerNumber = -1; // numer poprawnej odpowiedzi (z listy answers)
         List<String> correctAnswers = new ArrayList<>(); // poprawne odpowiedzi dla kolejnych slow np. lista: pies, kot, zolw, lew, ryba
@@ -179,15 +187,22 @@ public class QuizService {
         return null;
     }
 
-    // TODO
-
     /**
      * Pobranie odpowiedzi dla slowa o podanym wordId z bazy danych.
      *
      * @param wordId identyfikator slowa.
      * @return znaleziona odpowiedz.
      */
-    private String getAnswer(Long wordId) {
-        return null;
+    private String getAnswer(Long wordId) throws AnswerNotFoundException {
+        Random random = new Random();
+        Optional<Word> wordOptional = wordsService.getWordById(wordId);
+        if (wordOptional.isPresent()) {
+            Word word = wordOptional.get();
+            List<Translation> translations = word.getTranslations();
+            Translation translation = translations.get(random.nextInt(translations.size()));
+            String quote = translation.getQuote();
+            return quote;
+        }
+        throw new AnswerNotFoundException(wordId);
     }
 }

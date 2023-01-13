@@ -13,8 +13,6 @@ public interface WordsRepository extends JpaRepository<Word, Long> {
 
     List<Long> findIdsByWord(String word);
 
-    List<Word> getWords();
-
     // TODO przyklady:
     // pojedyncza wartosc kolumny:
     // 1. z uzyciem Query - w Query da sie stworzyc obiekt Javowy na podstawie jednego slowa (potrzebujemy do tego konstruktora), pole mozemy wyciagnac jedno (select pole from tablica)

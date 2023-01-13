@@ -2,6 +2,7 @@ package com.example.demo.model;
 
 import lombok.Data;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -20,5 +21,9 @@ public class Quiz {
     public Quiz(QuizType quizType, QuizDataType quizDataType) {
         this.quizType = quizType;
         this.quizDataType = quizDataType;
+        this.words = new ArrayList<>();
+        this.answers = new ArrayList<>();
+        this.correctAnswers = new ArrayList<>();
     }
+
 }

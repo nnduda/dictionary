@@ -59,6 +59,13 @@ public class WordsService {
 
     // TODO zadanie - ciekawostka
     // TODO jak wyciagnac z bazy wylacznie jedno pole
+
+    /**
+     * Get word from database by id.
+     *
+     * @param id word id.
+     * @return Word from database.
+     */
     public Optional<com.example.demo.model.xml.Word> getWordById(Long id) {
 
         // wordsRepository.findById(id); - wyszukuje cale slowo (wszystkie kolumny dla danego rekordu)
@@ -67,7 +74,11 @@ public class WordsService {
     }
 
     public List<com.example.demo.model.xml.Word> getWords() {
-        return wordsRepository.getWords();
+        return wordsRepository.findAll();
+    }
+
+    public long countWords() {
+        return wordsRepository.count();
     }
 }
 
