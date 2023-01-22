@@ -61,12 +61,8 @@ public class QuizService {
         return wordsIds;
     }
 
-    // TODO spojrzec na kod i przypomniec sobie jak dziala
     private void prepareAnswers(Quiz quiz, List<Long> wordsIds) throws AnswerNotFoundException { // wordsIds - identyfikatory slow: "dog","cat","turtle","lion","fish"
-        List<String> answers = new ArrayList<>(); // wylosowane odpowiedzi do danego slowa
-        int correctAnswerNumber = -1; // numer poprawnej odpowiedzi (z listy answers)
         List<String> correctAnswers = new ArrayList<>(); // poprawne odpowiedzi dla kolejnych slow np. lista: pies, kot, zolw, lew, ryba
-        Random r = new Random();
 
         // wyszukiwanie tlumaczen/znaczen
         for (int i = 0; i < wordsIds.size(); i++) {
@@ -77,8 +73,9 @@ public class QuizService {
             }
         }
 
+        Random r = new Random();
         for (int i = 0; i < wordsIds.size(); i++) {
-            Set<Integer> chosenAnswersSet = new HashSet<>(); // ew. LinkedHashSet
+            Set<Integer> chosenAnswersSet = new LinkedHashSet<>();
             // aktualnie wybrane/wylosowane odpowiedzi (juz uzyte)
             chosenAnswersSet.add(i); // dodanie numeru poprawnej odpowiedzi
             // losowanie 3 pozostalych odpowiedzi:
@@ -87,15 +84,46 @@ public class QuizService {
             }
             List<Integer> chosenAnswers = new ArrayList<>(chosenAnswersSet);
             // 3,4,1,2
-            correctAnswerNumber = r.nextInt(4); // 2
+            int correctAnswerNumber = r.nextInt(4); // np. 2, numer poprawnej odpowiedzi (z listy answers)
+
+
+            int tab[] = {2, 6, 7, 8};
+            int el1 = 0; // 0
+            int el2 = 2; // correctAnswerNumber
+
+            int tmp = tab[el2];
+            tab[el2] = tab[el1];
+            tab[el1] = tmp;
+
+            /*
+            // standardowy swap napisany recznie:
+            tmp = chosenAnswers.get(correctAnswerNumber);
+            chosenAnswers.set(correctAnswerNumber, chosenAnswers.get(0));
+            chosenAnswers.set(0, tmp);
+            */
+
+            // jednolijkowy swap (brzydki):
+            // chosenAnswers.set(0,(chosenAnswers.set(correctAnswerNumber, chosenAnswers.get(0))));
+
+            // produkcyjne, najczytelniejsze, najkrotsze
+            // Collections.swap(correctAnswers, 0, correctAnswerNumber);
+
+            // tworczy pomysl, nie do konca swap:
+            // 2,6,7,8
+            // 6,7,8 (2 zapamietane - correctAnswer)
+            // 6,7,2,8
+            // add(indeks, wartosc) - dodaje wartosc pod dany indeks i przesuwa to co w nim bylo w prawo (razem z reszta elementow)
             Integer correctAnswer = chosenAnswers.remove(0);//  4,1,2
             chosenAnswers.add(correctAnswerNumber, correctAnswer); // 4,1,3,2
 
+
+            List<String> answers = new ArrayList<>(); // wylosowane odpowiedzi do danego slowa
             for (Integer answerNumber : chosenAnswers) {
                 answers.add(correctAnswers.get(answerNumber));
             }
 
             quiz.getAnswers().add(answers);
+            quiz.getCorrectAnswers().add(correctAnswerNumber);
             // przechodzimy po kazdym slowie/dla kazdego slowa i tworzymy liste odpowiedzi do niego (answers)
             // przygotowujemy dla danego slowa liste "answers"
             // na miejscu 'i' jest odpowiedz dla danego slowa w correctAnswers
