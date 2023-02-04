@@ -26,4 +26,8 @@ public class Quiz {
         this.correctAnswers = new ArrayList<>();
     }
 
+    public void setWord(int index, String word) {
+        this.words.set(index, word);
+    }
+
 }

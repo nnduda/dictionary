@@ -1,6 +1,5 @@
 package com.example.demo.words;
 
-import com.example.demo.model.MainWord;
 import com.example.demo.model.WordExtras;
 import com.example.demo.model.xml.Translation;
 import com.example.demo.model.xml.Word;
@@ -11,6 +10,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.servlet.ModelAndView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,9 +39,10 @@ public class WordsController {
     }
 
     @GetMapping(value = "/word")
-    public ResponseEntity<MainWord> getWord(@RequestParam("word") String word) {
-        MainWord mainWord = wordsService.getWord(word);
-        return ResponseEntity.ok(mainWord);
+    public ModelAndView getWord(@RequestParam("word") String word) {
+        ModelAndView mav = new ModelAndView("mainWord");
+        mav.addObject("mainWord", wordsService.getWord(word));
+        return mav;
     }
 
     @GetMapping(value = "/{id}")

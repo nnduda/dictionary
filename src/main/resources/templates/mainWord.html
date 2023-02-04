@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+Words template
+</br>
+
+<table>
+    <tr>
+        <th>Word</th>
+        <th>Pronunciation</th>
+        <th>Translation</th>
+        <th>Phonetic</th>
+        <th>Meaning</th>
+    </tr>
+    <!--/*@thymesVar id="word" type="com.example.demo.model.MainWord"*/-->
+    <tr th:each="word : ${mainWord}">
+        <td th:text="${word.word}"/>
+        <td th:text="${word.pronunciation}"/>
+        <td th:text="${word.translations}"/> <!-- TODO jak wyswietlic te wartosci ladniej -->
+        <td th:text="${word.phonetics}"/>
+        <td th:text="${word.meanings}"/>
+    </tr>
+</table>
+
+</body>
+</html>

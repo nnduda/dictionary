@@ -5,6 +5,7 @@ import com.example.demo.model.Quiz;
 import com.example.demo.model.QuizDataType;
 import com.example.demo.model.QuizType;
 import com.example.demo.model.xml.Translation;
+import com.example.demo.model.xml.Type;
 import com.example.demo.model.xml.Word;
 import com.example.demo.words.WordsService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,6 +58,9 @@ public class QuizService {
         }
             return quiz;
 */
+        words.set(9, "binge");
+        Word[] binges = wordsService.getWordsFromDatabase("binge");
+        wordsIds.set(9, binges[0].getId());
         quiz.setWords(words);
         return wordsIds;
     }
@@ -67,9 +71,9 @@ public class QuizService {
         // wyszukiwanie tlumaczen/znaczen
         for (int i = 0; i < wordsIds.size(); i++) {
             if (QuizType.TRANSLATIONS.equals(quiz.getQuizType())) {
-                correctAnswers.add(getAnswer(wordsIds.get(i)));
+                correctAnswers.add(getAnswer(wordsIds.get(i), i, quiz));
             } else if (QuizType.MEANINGS.equals(quiz.getQuizType())) {
-                correctAnswers.add(getAnswer(quiz.getWords().get(i)));
+                correctAnswers.add(getAnswer(quiz.getWords().get(i))); // TODO do zmiany analogicznie jak translations?
             }
         }
 
@@ -221,7 +225,7 @@ public class QuizService {
      * @param wordId identyfikator slowa.
      * @return znaleziona odpowiedz.
      */
-    private String getAnswer(Long wordId) throws AnswerNotFoundException {
+    private String getAnswer(Long wordId, int wordIdx, Quiz quiz) throws AnswerNotFoundException {
         Random random = new Random();
         Optional<Word> wordOptional = wordsService.getWordById(wordId);
         if (wordOptional.isPresent()) {
@@ -229,6 +233,11 @@ public class QuizService {
             List<Translation> translations = word.getTranslations();
             Translation translation = translations.get(random.nextInt(translations.size()));
             String quote = translation.getQuote();
+            if (Type.IDIOM.equals(translation.getType())) {
+                quiz.setWord(wordIdx, translation.getPhrase()); // list.set(index, wartosc)
+                //quiz.getWords().set(i, translation.getPhrase());
+            }
+
             return quote;
         }
         throw new AnswerNotFoundException(wordId);

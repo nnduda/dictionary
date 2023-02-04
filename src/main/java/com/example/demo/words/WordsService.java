@@ -4,6 +4,7 @@ import com.example.demo.model.MainWord;
 import com.example.demo.model.json.Word;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
@@ -40,7 +41,12 @@ public class WordsService {
 
     public com.example.demo.model.json.Word[] getWordsFromExternalApi(String name) {
         String url = DICTIONARY_API_URL + name;
-        com.example.demo.model.json.Word[] words = restTemplate.getForEntity(url, com.example.demo.model.json.Word[].class).getBody();
+        com.example.demo.model.json.Word[] words = null;
+        try {
+            words = restTemplate.getForEntity(url, com.example.demo.model.json.Word[].class).getBody();
+        } catch (RestClientException e) {
+            System.out.println("Failed to establish connection with remote server");
+        }
         if (isNull(words)) {
             words = new Word[0];
         }
@@ -59,6 +65,10 @@ public class WordsService {
 
     // TODO zadanie - ciekawostka
     // TODO jak wyciagnac z bazy wylacznie jedno pole
+    public String getPronunciation(String word) {
+        String pronunciationByWord = wordsRepository.findPronunciationByWord(word);
+        return pronunciationByWord;
+    }
 
     /**
      * Get word from database by id.

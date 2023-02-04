@@ -21,6 +21,18 @@ public class MainWord {
     private List<Phonetic> phonetics;
     private List<Meaning> meanings;
 
+    // drink
+    // Word[] -> {Word{word=drink, translation=pić}, Word{word=drink, translation=napój}}
+    /*
+    Word{word=drink, translation={pić}}
+    Word{word=drink, translation={napój}}
+    stream.map(w -> w.getTranslations()):
+    {pić} (lista)
+    {napój} (lista)
+    collect(Collectors.toList()):
+    {{pić},{napój}}
+     */
+    // TODO ^wyszukać w SQLu taki przypadek i zobaczyc dlaczego tak wyglada
     public MainWord(String word, com.example.demo.model.xml.Word[] wordsFromDatabase, com.example.demo.model.json.Word[] wordsFromExternalApi) {
         this.word = word;
         if (wordsFromDatabase.length != 0) {

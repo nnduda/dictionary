@@ -17,6 +17,8 @@ public class Cit {
     @Getter(AccessLevel.NONE)
     private Type type;
 
+    private Cit cit;
+
     @XmlAttribute
     public Type getType() {
         return type;

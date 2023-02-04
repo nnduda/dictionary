@@ -120,6 +120,10 @@ public class UnmarshallerXml {
                 if (xr != null && !type.equals(Type.COLLOC)) {
                     translation.setPhrase(xr.getRef());
                 }
+                if (Type.IDIOM.equals(type)) {
+                    translation.setPhrase(cit.getQuote());
+                    translation.setQuote(cit.getCit().getQuote());
+                }
                 translations.add(translation);
             }
         }
