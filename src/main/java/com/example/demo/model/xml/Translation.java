@@ -6,6 +6,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import java.util.Objects;
 
 @Entity(name = "translations")
 @Data
@@ -22,5 +23,16 @@ public class Translation {
 
     private String partOfSpeech;
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Translation that = (Translation) o;
+        return type == that.type && Objects.equals(phrase, that.phrase) && quote.equals(that.quote) && Objects.equals(partOfSpeech, that.partOfSpeech);
+    }
 
+    @Override
+    public int hashCode() {
+        return Objects.hash(type, phrase, quote, partOfSpeech);
+    }
 }

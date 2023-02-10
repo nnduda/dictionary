@@ -90,6 +90,29 @@ public class WordsService {
     public long countWords() {
         return wordsRepository.count();
     }
+
+    public void saveAndMergeDuplicates(List<com.example.demo.model.xml.Word> words) {
+        for (int i = 0; i < words.size(); i++) {
+            for (int j = i + 1; j < words.size(); j++) {
+                if (words.get(i).equals(words.get(j))) {
+                    words.get(j).addTranslations(words.get(i).getTranslations());
+                    words.remove(i);
+                }
+            }
+        }
+
+        /*
+        0 - 1,2,3,4,5...
+        1 - 2,3,4,5...
+        2 - 3,4,5...
+         */
+
+        // TODO zamiast podwojnej petli mozna szukac duplikatow wrzucajac wartosci do HashMapy
+
+        // TODO* zmiana rozwiazania z HashMapą na strumien
+
+        wordsRepository.saveAll(words);
+    }
 }
 
 

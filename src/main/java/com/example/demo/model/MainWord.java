@@ -17,12 +17,12 @@ public class MainWord {
 
     private String word;
     private String pronunciation;
-    private List<List<Translation>> translations;
+    private List<List<Translation>> translations; //  TODO uprosci sie po zmianie konstruktora
     private List<Phonetic> phonetics;
     private List<Meaning> meanings;
 
     // drink
-    // Word[] -> {Word{word=drink, translation=pić}, Word{word=drink, translation=napój}}
+    // Word[] -> {Word{id=1, word=drink, translation=pić}, Word{id=2, word=drink, translation=napój}}
     /*
     Word{word=drink, translation={pić}}
     Word{word=drink, translation={napój}}
@@ -31,8 +31,13 @@ public class MainWord {
     {napój} (lista)
     collect(Collectors.toList()):
     {{pić},{napój}}
+
+    select count(word), word
+    from words
+    group by word
+    having count(word) > 1;
      */
-    // TODO ^wyszukać w SQLu taki przypadek i zobaczyc dlaczego tak wyglada
+    // TODO skoro wiemy, ze baza zawsze zwraca po poprawce jeden rekord to zmieni sie argument w funkcji z tablicy (.xml.Word[]) na jeden obiekt (.xml.Word)
     public MainWord(String word, com.example.demo.model.xml.Word[] wordsFromDatabase, com.example.demo.model.json.Word[] wordsFromExternalApi) {
         this.word = word;
         if (wordsFromDatabase.length != 0) {

@@ -18,13 +18,13 @@ import java.util.Optional;
 @SuppressWarnings("unused")
 public class UnmarshallerXml {
     @Autowired
-    WordsRepository wordsRepository;
+    WordsService wordsService;
     private static final String FOLDER_NAME = "/static/";
 
     @PostConstruct
     private void postConstruct() {
         List<Word> entities = getEntities();
-        wordsRepository.saveAll(entities);
+        wordsService.saveAndMergeDuplicates(entities);
     }
 
     private List<Word> getEntities() {
