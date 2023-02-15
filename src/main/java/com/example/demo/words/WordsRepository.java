@@ -13,11 +13,13 @@ public interface WordsRepository extends JpaRepository<Word, Long> {
     @Query("select pronunciation from words where word = :word")
     String findPronunciationByWord(String word);
 
-    List<Word> findByWord(String word);
+    //List<Word> findByWord(String word);
+
+    Word findOneByWord(String word);
 
     List<Long> findIdsByWord(String word);
 
-    // TODO przyklady:
+    // przyklady:
     // pojedyncza wartosc kolumny:
     // 1. z uzyciem Query - w Query da sie stworzyc obiekt Javowy na podstawie jednego slowa (potrzebujemy do tego konstruktora), pole mozemy wyciagnac jedno (select pole from tablica)
     // 2. z uzyciem Query - select word from words where id = ?

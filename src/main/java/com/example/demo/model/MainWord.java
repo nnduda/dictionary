@@ -9,6 +9,7 @@ import lombok.Setter;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Getter
@@ -17,10 +18,11 @@ public class MainWord {
 
     private String word;
     private String pronunciation;
-    private List<List<Translation>> translations; //  TODO uprosci sie po zmianie konstruktora
+    private List<Translation> translations; //  TODO uprosci sie po zmianie konstruktora
     private List<Phonetic> phonetics;
     private List<Meaning> meanings;
 
+    // stare rozwiazanie z List<List<Translation>>:
     // drink
     // Word[] -> {Word{id=1, word=drink, translation=pić}, Word{id=2, word=drink, translation=napój}}
     /*
@@ -38,13 +40,11 @@ public class MainWord {
     having count(word) > 1;
      */
     // TODO skoro wiemy, ze baza zawsze zwraca po poprawce jeden rekord to zmieni sie argument w funkcji z tablicy (.xml.Word[]) na jeden obiekt (.xml.Word)
-    public MainWord(String word, com.example.demo.model.xml.Word[] wordsFromDatabase, com.example.demo.model.json.Word[] wordsFromExternalApi) {
+    public MainWord(String word, com.example.demo.model.xml.Word wordFromDatabase, com.example.demo.model.json.Word[] wordsFromExternalApi) {
         this.word = word;
-        if (wordsFromDatabase.length != 0) {
-            this.pronunciation = wordsFromDatabase[0].getPronunciation();
-            this.translations = Arrays.stream(wordsFromDatabase)
-                    .map(w -> w.getTranslations())
-                    .collect(Collectors.toList());
+        if (Objects.nonNull(wordFromDatabase)) {
+            this.pronunciation = wordFromDatabase.getPronunciation();
+            this.translations = wordFromDatabase.getTranslations();
             this.phonetics = Arrays.stream(wordsFromExternalApi)
                     .map(w -> w.getPhonetics())
                     .flatMap(Arrays::stream) // Stream<Phonetic[]> -> Stream<Phonetic> // flatten

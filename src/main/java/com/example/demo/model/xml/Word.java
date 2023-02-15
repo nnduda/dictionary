@@ -33,6 +33,11 @@ public class Word {
         this.translations = new ArrayList<>(translationSet); // zapisujemy ponownie bez duplikatow
     }
 
+    public Word merge(Word word) {
+        this.translations.addAll(word.getTranslations());
+        return this;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

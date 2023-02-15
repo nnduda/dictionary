@@ -59,8 +59,10 @@ public class QuizService {
             return quiz;
 */
         words.set(9, "binge");
-        Word[] binges = wordsService.getWordsFromDatabase("binge");
-        wordsIds.set(9, binges[0].getId());
+        Word binge = wordsService.getWordFromDatabase("binge");
+        if (binge != null) {
+            wordsIds.set(9, binge.getId());
+        }
         quiz.setWords(words);
         return wordsIds;
     }

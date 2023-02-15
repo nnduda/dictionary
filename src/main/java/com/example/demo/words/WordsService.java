@@ -3,11 +3,14 @@ package com.example.demo.words;
 import com.example.demo.model.MainWord;
 import com.example.demo.model.json.Word;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import static java.util.Objects.isNull;
@@ -28,15 +31,16 @@ public class WordsService {
     }
 
     public MainWord getWord(String word) {
-        com.example.demo.model.xml.Word[] wordsFromDatabase = getWordsFromDatabase(word);
+        com.example.demo.model.xml.Word wordsFromDatabase = getWordFromDatabase(word);
         com.example.demo.model.json.Word[] wordsFromExternalApi = getWordsFromExternalApi(word);
         MainWord mainWord = new MainWord(word, wordsFromDatabase, wordsFromExternalApi);
         return mainWord;
     }
 
-    public com.example.demo.model.xml.Word[] getWordsFromDatabase(String name) {
-        List<com.example.demo.model.xml.Word> words = wordsRepository.findByWord(name);
-        return words.toArray(new com.example.demo.model.xml.Word[0]);
+    @Nullable
+    public com.example.demo.model.xml.Word getWordFromDatabase(String name) {
+        com.example.demo.model.xml.Word word = wordsRepository.findOneByWord(name);
+        return word;
     }
 
     public com.example.demo.model.json.Word[] getWordsFromExternalApi(String name) {
@@ -63,8 +67,8 @@ public class WordsService {
         notesService.addNote(word, note);
     }
 
-    // TODO zadanie - ciekawostka
-    // TODO jak wyciagnac z bazy wylacznie jedno pole
+    // zadanie - ciekawostka
+    // jak wyciagnac z bazy wylacznie jedno pole
     public String getPronunciation(String word) {
         String pronunciationByWord = wordsRepository.findPronunciationByWord(word);
         return pronunciationByWord;
@@ -92,6 +96,8 @@ public class WordsService {
     }
 
     public void saveAndMergeDuplicates(List<com.example.demo.model.xml.Word> words) {
+/*
+        // rozwiazanie na liscie
         for (int i = 0; i < words.size(); i++) {
             for (int j = i + 1; j < words.size(); j++) {
                 if (words.get(i).equals(words.get(j))) {
@@ -100,6 +106,7 @@ public class WordsService {
                 }
             }
         }
+*/
 
         /*
         0 - 1,2,3,4,5...
@@ -107,10 +114,49 @@ public class WordsService {
         2 - 3,4,5...
          */
 
-        // TODO zamiast podwojnej petli mozna szukac duplikatow wrzucajac wartosci do HashMapy
+        // rozwiazanie na mapie v1
+        /*Map<String, com.example.demo.model.xml.Word> wordHashMap = new HashMap();
+        for (com.example.demo.model.xml.Word word : words) {
+            String wordValue = word.getWord();
+            if (wordHashMap.containsKey(wordValue)) { // merge
+                com.example.demo.model.xml.Word currentWord = wordHashMap.get(wordValue);
+                word.addTranslations(currentWord.getTranslations());
+            }
+            wordHashMap.put(wordValue, word);
+        }
+
+        words.clear();
+        words.addAll(wordHashMap.values());*/
+
+        // rozwiazanie na mapie v2 (z merge)
+        Map<String, com.example.demo.model.xml.Word> wordHashMap = new HashMap<>();
+        for (com.example.demo.model.xml.Word word : words) {
+            String wordValue = word.getWord();
+            wordHashMap.merge(wordValue, word, com.example.demo.model.xml.Word::merge);
+        }
+
+        words.clear();
+        words.addAll(wordHashMap.values());
+
+        /*Map<String, Long> wordHashMap = new HashMap<>();
+        for (com.example.demo.model.xml.Word word : words) {
+            if (wordHashMap.containsKey(word.getWord())) {
+
+                // cat - 15
+                // dog - 30
+                // snake - 45
+
+                // cat - 60
+
+
+
+                Long aLong = wordHashMap.get(word.getWord());
+
+            } else
+                wordHashMap.put(word.getWord(), word.getId());
+        }*/
 
         // TODO* zmiana rozwiazania z HashMapą na strumien
-
         wordsRepository.saveAll(words);
     }
 }

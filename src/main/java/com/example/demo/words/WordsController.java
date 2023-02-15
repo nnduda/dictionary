@@ -109,9 +109,8 @@ public class WordsController {
     @GetMapping("/test2")
     public ResponseEntity<String> save2() {
         // aktualizacja slowa 'abc' - dodanie WordExtras
-        Word[] words = wordsService.getWordsFromDatabase("abc");
-        if (words != null) {
-            Word word = words[0];
+        Word word = wordsService.getWordFromDatabase("abc");
+        if (word != null) {
             WordExtras wordExtras = new WordExtras();
             wordExtras.setValue("def");
             wordExtras.setWord(word);
@@ -128,9 +127,8 @@ public class WordsController {
 
     @GetMapping("/test3")
     public ResponseEntity<Word> save3() {
-        Word[] words = wordsService.getWordsFromDatabase("abc");
-        if (words != null) {
-            Word word = words[0];
+        Word word = wordsService.getWordFromDatabase("abc");
+        if (word != null) {
             WordExtras wordExtras = new WordExtras();
             wordExtras.setValue("ghi");
             wordExtras.setWord(word);
@@ -138,8 +136,7 @@ public class WordsController {
             wordExtrasService.save(wordExtras);
 
             // sprawdzenie czy dodalo sie poprawnie:
-            words = wordsService.getWordsFromDatabase("abc");
-            word = words[0];
+            word = wordsService.getWordFromDatabase("abc");
             return ResponseEntity.ok(word);
         }
         return ResponseEntity.notFound().build();
