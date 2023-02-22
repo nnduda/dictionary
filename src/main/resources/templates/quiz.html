@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<table>
+    <tr>
+        <th>Words</th>
+        <th>Answers</th>
+    </tr>
+    <tr th:each="word,iterStat : ${quiz.words}">
+        <!-- i.index -->
+        <td th:text="${word}"/>
+        <td>
+            <tr th:each="answer : ${word.answers.get(__${iterStat.index}__)}"></tr> <!-- TODO sprawdzic -->
+        </td>
+    </tr>
+</table>
+</body>
+</html>

@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static java.util.Objects.isNull;
 
@@ -135,9 +136,9 @@ public class WordsService {
             wordHashMap.merge(wordValue, word, com.example.demo.model.xml.Word::merge);
         }
 
+
         words.clear();
         words.addAll(wordHashMap.values());
-
         /*Map<String, Long> wordHashMap = new HashMap<>();
         for (com.example.demo.model.xml.Word word : words) {
             if (wordHashMap.containsKey(word.getWord())) {
@@ -157,8 +158,18 @@ public class WordsService {
         }*/
 
         // TODO* zmiana rozwiazania z HashMapą na strumien
+        Map<String, com.example.demo.model.xml.Word> wordHashMap2 = words.stream()
+                .collect(Collectors.toMap(
+                        word -> word.getWord(),
+                        word -> word,
+                        com.example.demo.model.xml.Word::merge)
+                );
+        Word word = new Word();
+
+
         wordsRepository.saveAll(words);
     }
+
 }
 
 

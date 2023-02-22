@@ -3,12 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
 </head>
 <body>
 Words template
 </br>
 
-<table>
+<table class="table">
     <tr>
         <th>Word</th>
         <th>Pronunciation</th>
@@ -20,9 +21,61 @@ Words template
     <tr th:each="word : ${mainWord}">
         <td th:text="${word.word}"/>
         <td th:text="${word.pronunciation}"/>
-        <td th:text="${word.translations}"/> <!-- TODO jak wyswietlic te wartosci ladniej -->
-        <td th:text="${word.phonetics}"/>
-        <td th:text="${word.meanings}"/>
+        <td>
+            <table>
+                <tr>
+                    <th>Type</th>
+                    <th>Phrase</th>
+                    <th>Quote</th>
+                    <th>Part Of Speech</th>
+                </tr>
+                <tr th:each="translation : ${word.translations}">
+                    <td th:text="${translation.type}"/>
+                    <td th:text="${translation.phrase}"/>
+                    <td th:text="${translation.quote}"/>
+                    <td th:text="${translation.partOfSpeech}"/>
+                </tr>
+            </table>
+        </td>
+        <td>
+            <table class="table">
+                <tr>
+                    <th>Text</th>
+                <tr th:each="phonetic : ${word.phonetics}">
+                    <td th:text="${phonetic.text}"/>
+                </tr>
+            </table>
+        </td>
+        <td>
+            <table class="table">
+                <tr>
+                    <th>Part of speech</th>
+                    <th>Synonyms</th>
+                    <th>Definitions</th>
+                <tr th:each="meaning : ${word.meanings}">
+                    <td th:text="${meaning.partOfSpeech}"/>
+                    <td>
+                        <table class="table">
+                            <tr th:each="synonym : ${meaning.synonyms}">
+                                <td th:text="${synonym}"/>
+                            </tr>
+                        </table>
+                    </td>
+                    <td>
+                        <table class="table">
+                            <tr>
+                                <th>Definition</th>
+                                <th>Example</th>
+                            </tr>
+                            <tr th:each="definition : ${meaning.definitions}">
+                                <td th:text="${definition.definition}"/>
+                                <td th:text="${definition.example}"/>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+            </table>
+        </td>
     </tr>
 </table>
 

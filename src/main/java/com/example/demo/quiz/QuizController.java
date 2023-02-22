@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.ModelAndView;
 
 @Controller
 @RequestMapping("quiz")
@@ -22,5 +23,12 @@ public class QuizController {
     public ResponseEntity<Quiz> getQuiz() {
         Quiz randomQuiz = quizService.createRandomQuiz();
         return ResponseEntity.ok(randomQuiz);
+    }
+
+    @GetMapping("/random")
+    public ModelAndView getRandomQuiz() {
+        ModelAndView mv = new ModelAndView("quiz");
+        mv.addObject("quiz", quizService.createRandomQuiz());
+        return mv;
     }
 }

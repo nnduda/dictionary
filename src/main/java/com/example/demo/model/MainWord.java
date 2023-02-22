@@ -18,7 +18,7 @@ public class MainWord {
 
     private String word;
     private String pronunciation;
-    private List<Translation> translations; //  TODO uprosci sie po zmianie konstruktora
+    private List<Translation> translations;
     private List<Phonetic> phonetics;
     private List<Meaning> meanings;
 
@@ -39,7 +39,6 @@ public class MainWord {
     group by word
     having count(word) > 1;
      */
-    // TODO skoro wiemy, ze baza zawsze zwraca po poprawce jeden rekord to zmieni sie argument w funkcji z tablicy (.xml.Word[]) na jeden obiekt (.xml.Word)
     public MainWord(String word, com.example.demo.model.xml.Word wordFromDatabase, com.example.demo.model.json.Word[] wordsFromExternalApi) {
         this.word = word;
         if (Objects.nonNull(wordFromDatabase)) {
