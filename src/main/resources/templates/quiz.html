@@ -5,18 +5,54 @@
     <title>Title</title>
 </head>
 <body>
-<table>
-    <tr>
-        <th>Words</th>
-        <th>Answers</th>
-    </tr>
-    <tr th:each="word,iterStat : ${quiz.words}">
-        <!-- i.index -->
-        <td th:text="${word}"/>
-        <td>
-            <tr th:each="answer : ${word.answers.get(__${iterStat.index}__)}"></tr> <!-- TODO sprawdzic -->
-        </td>
-    </tr>
-</table>
+    <form action="#" th:action="@{/quiz/random}" th:object="${quizAnswers}" method="post">
+        <table>
+            <tr>
+                <th>Words</th>
+                <th>Answers</th>
+            </tr>
+            <!--<tr th:each="word : ${quiz.words}">
+                <td th:text="${word}"/>
+                &lt;!&ndash;<div>&ndash;&gt;
+                    <td th:each="answer : ${quiz.answers.get(__${wordStat.index}__)}">
+                        <p th:text="${answer}"></p>
+                        <input type="checkbox"/>
+                        &lt;!&ndash; radio || select &ndash;&gt;
+                    </td>
+                &lt;!&ndash;</div>&ndash;&gt;
+            </tr>-->
+            <tr th:each="word : ${quiz.words}">
+                <td th:text="${word}"/>
+                <td>
+                    <select th:field="*{answers[__${wordStat.index}__]}"> <!--  -->
+                        <option th:value="-1" selected disabled hidden>Choose answer</option>
+                        <option th:each="answer : ${quiz.answers.get(__${wordStat.index}__)}"
+                                th:value="${answerStat.index}" th:text="${answer}">
+                        </option>
+                    </select>
+                </td>
+            </tr>
+        </table>
+        <input type="submit" th:value="Wyslij"/>
+    </form>
+
+
+    </br>
+    </br>
+    <form action="#" th:action="@{/quiz}" th:object="${note}" method="post">
+        <input type="number" th:field="${note.referenceTableId}"/>
+        <input type="text" th:field="${note.note}"/> <!-- Note note; note.note = text z pola -->
+        <input type="submit" th:value="Wyslij"/>
+    </form>
+    <table>
+        <tr>
+            <th>Words</th>
+            <th>Answers</th>
+        </tr>
+        <tr th:each="word : ${quiz.words}">
+            <td th:text="${word}"/>
+            <td th:each="answer : ${quiz.answers.get(__${wordStat.index}__)}" th:text="${answer}"/>
+        </tr>
+    </table>
 </body>
 </html>

@@ -2,6 +2,7 @@ package com.example.demo.quiz;
 
 import com.example.demo.exceptions.AnswerNotFoundException;
 import com.example.demo.model.Quiz;
+import com.example.demo.model.QuizAnswers;
 import com.example.demo.model.QuizDataType;
 import com.example.demo.model.QuizType;
 import com.example.demo.model.xml.Translation;
@@ -58,11 +59,6 @@ public class QuizService {
         }
             return quiz;
 */
-        words.set(9, "binge");
-        Word binge = wordsService.getWordFromDatabase("binge");
-        if (binge != null) {
-            wordsIds.set(9, binge.getId());
-        }
         quiz.setWords(words);
         return wordsIds;
     }
@@ -233,7 +229,7 @@ public class QuizService {
         if (wordOptional.isPresent()) {
             Word word = wordOptional.get();
             List<Translation> translations = word.getTranslations();
-            Translation translation = translations.get(random.nextInt(translations.size()));
+            Translation translation = translations.get(random.nextInt(translations.size())); // TODO do sprawdzenia translations.size() moze byc rowne 0?
             String quote = translation.getQuote();
             if (Type.IDIOM.equals(translation.getType())) {
                 quiz.setWord(wordIdx, translation.getPhrase()); // list.set(index, wartosc)
@@ -243,5 +239,32 @@ public class QuizService {
             return quote;
         }
         throw new AnswerNotFoundException(wordId);
+    }
+
+    public List<Boolean> calculateResults(Quiz quiz, QuizAnswers quizAnswers) {
+        List<Integer> correctAnswers = quiz.getCorrectAnswers();
+        List<Integer> answersFromUser = quizAnswers.getAnswers();
+        List<Integer> wrongAnswers = new ArrayList<>();
+        List<Boolean> results = new ArrayList<>();
+        for (int i = 0; i < correctAnswers.size(); i++) {
+            /*if (Objects.equals(correctAnswers.get(i), answersFromUser.get(i))) { // bezpieczne z wartosciami null po obu stronach
+                wrongAnswers.add(i);
+            }
+            if (correctAnswers.get(i).equals(answersFromUser.get(i))) { // bezpieczne z wartoscia null po prawej stronie
+                wrongAnswers.add(i);
+            }
+            if (correctAnswers.get(i).equals(answersFromUser.get(i)))  {
+                answers.add(true);
+            } else {
+                answers.add(false);
+            }*/
+            results.add(correctAnswers.get(i).equals(answersFromUser.get(i))); // answers.add(correctAnswers.get(i).equals(answersFromUser.get(i)) ? true : false);
+            /*
+            answers.add(true) to to samo co answers.add(true ? true : false) (to pierwsze jest preferowane)
+             */
+        }
+
+        return results;
+
     }
 }

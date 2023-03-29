@@ -12,8 +12,22 @@ import java.util.List;
 @Data
 public class Quiz {
 
+    /*
+    Rozwiazanie 1:
+    Quiz:
+        id, words (lista rozdzielona przecinkiem), answers (lista rozdz. przec. i dod. znakiem), correctAnswers (list. rozdz. przec.), quizType, quizDataType
+     */
+    /*
+    Rozwiazanie 2: <- wybrane
+    Analogicznie jak Word i Translation
+    Quiz:
+        id, quizType, quizDataType
+    QuizQuestion:
+        id, quiz_id, word, answers (lista rozdzielona srednikiem), correct answer
+     */
+    // TODO words, answers, correctAnswers do przeniesienia do QuizQuestion
     private List<String> words;
-    private List<List<String>> answers;
+    private List<List<String>> answers; // 10 elementow po 4 tlumaczenia kazdy
     private List<Integer> correctAnswers; // numery poprawnych odpowiedzi, mogloby to tez byc List<String>
     private QuizType quizType;
     private QuizDataType quizDataType;
@@ -31,3 +45,5 @@ public class Quiz {
     }
 
 }
+
+

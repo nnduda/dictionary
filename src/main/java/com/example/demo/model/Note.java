@@ -20,6 +20,10 @@ public class Note {
 
     private String note;
 
+    public Note(String note) {
+        this.note = note;
+    }
+
     public Note(ReferenceTableType referenceTable, Long referenceTableId, String note) {
         this.referenceTable = referenceTable;
         this.referenceTableId = referenceTableId;
