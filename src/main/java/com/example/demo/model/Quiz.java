@@ -2,7 +2,7 @@ package com.example.demo.model;
 
 import lombok.Data;
 
-import java.util.ArrayList;
+import javax.persistence.*;
 import java.util.List;
 
 /**
@@ -10,6 +10,7 @@ import java.util.List;
  * quiz angielsko-angielski, dane bardziej z jsona
  */
 @Data
+@Entity(name = "quizzes")
 public class Quiz {
 
     /*
@@ -26,23 +27,22 @@ public class Quiz {
         id, quiz_id, word, answers (lista rozdzielona srednikiem), correct answer
      */
     // TODO words, answers, correctAnswers do przeniesienia do QuizQuestion
-    private List<String> words;
-    private List<List<String>> answers; // 10 elementow po 4 tlumaczenia kazdy
-    private List<Integer> correctAnswers; // numery poprawnych odpowiedzi, mogloby to tez byc List<String>
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
     private QuizType quizType;
     private QuizDataType quizDataType;
+
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name = "quiz_id") // kolumna z tablicy quiz
+    private List<QuizQuestion> quizQuestions;
 
     public Quiz(QuizType quizType, QuizDataType quizDataType) {
         this.quizType = quizType;
         this.quizDataType = quizDataType;
-        this.words = new ArrayList<>();
-        this.answers = new ArrayList<>();
-        this.correctAnswers = new ArrayList<>();
     }
 
-    public void setWord(int index, String word) {
-        this.words.set(index, word);
-    }
 
 }
 

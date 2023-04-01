@@ -1,10 +1,7 @@
 package com.example.demo.quiz;
 
 import com.example.demo.exceptions.AnswerNotFoundException;
-import com.example.demo.model.Quiz;
-import com.example.demo.model.QuizAnswers;
-import com.example.demo.model.QuizDataType;
-import com.example.demo.model.QuizType;
+import com.example.demo.model.*;
 import com.example.demo.model.xml.Translation;
 import com.example.demo.model.xml.Type;
 import com.example.demo.model.xml.Word;
@@ -26,14 +23,38 @@ public class QuizService {
 
     public Quiz createRandomQuiz() {
         Quiz quiz = new Quiz(QuizType.TRANSLATIONS, QuizDataType.RANDOM);
-        List<Long> wordsIds = setWordsAndGetWordsIds(quiz);
+        List<Word> randomWords = getRandomWords(10);
+        //fillQuizQuestions(quiz, randomWords);
+        // TODO wordsIds moze byc wyliczane w prepareAnswers
+        List<Long> wordsIds = randomWords.stream()
+                .map(Word::getId)
+                .toList();
         try {
-            prepareAnswers(quiz, wordsIds);
+            prepareAnswers(quiz, randomWords, wordsIds);
         } catch (AnswerNotFoundException e) {
             System.out.println("Nie znaleziono odpowiedzi dla slowa o id " + e.getId());
             e.printStackTrace();
         }
         return quiz;
+    }
+
+    private void fillQuizQuestions(Quiz quiz, List<Word> randomWords) {
+        List<QuizQuestion> quizQuestions = new ArrayList<>();
+        for (Word word : randomWords) {
+            quizQuestions.add(new QuizQuestion(word.getWord()));
+        }
+        quiz.setQuizQuestions(quizQuestions);
+    }
+
+    private List<Word> getRandomWords(int wordsCount) {
+        Random random = new Random();
+        long numWords = wordsService.countWords();
+        List<Word> words = new ArrayList<>();
+        while (words.size() < wordsCount) {
+            Optional<Word> word = wordsService.getWordById(random.nextLong() % numWords);
+            word.ifPresent(words::add);
+        }
+        return words;
     }
 
     private List<Long> setWordsAndGetWordsIds(Quiz quiz) {
@@ -48,34 +69,26 @@ public class QuizService {
                 wordsIds.add(word.get().getId());
             }
         }
-        /*
 
-        for (int i = 0; i < 10; ) {
-            Optional<Word> word = wordsService.getWordById(random.nextLong());
-            if (word.isPresent()) {
-                words.add(word.get());
-                i++;
-            }
-        }
-            return quiz;
-*/
-        quiz.setWords(words);
         return wordsIds;
     }
 
-    private void prepareAnswers(Quiz quiz, List<Long> wordsIds) throws AnswerNotFoundException { // wordsIds - identyfikatory slow: "dog","cat","turtle","lion","fish"
+    // TODO nazwa delikatnie do zmiany jesli tworzymy tutaj QuizQuestions
+    private void prepareAnswers(Quiz quiz, List<Word> randomWords, List<Long> wordsIds) throws AnswerNotFoundException { // wordsIds - identyfikatory slow: "dog","cat","turtle","lion","fish"
         List<String> correctAnswers = new ArrayList<>(); // poprawne odpowiedzi dla kolejnych slow np. lista: pies, kot, zolw, lew, ryba
+
 
         // wyszukiwanie tlumaczen/znaczen
         for (int i = 0; i < wordsIds.size(); i++) {
             if (QuizType.TRANSLATIONS.equals(quiz.getQuizType())) {
                 correctAnswers.add(getAnswer(wordsIds.get(i), i, quiz));
             } else if (QuizType.MEANINGS.equals(quiz.getQuizType())) {
-                correctAnswers.add(getAnswer(quiz.getWords().get(i))); // TODO do zmiany analogicznie jak translations?
+                correctAnswers.add(getAnswer(quiz.getQuizQuestions().get(i).getWord())); // TODO do zmiany analogicznie jak translations?
             }
         }
 
         Random r = new Random();
+        List<QuizQuestion> quizQuestions = new ArrayList<>();
         for (int i = 0; i < wordsIds.size(); i++) {
             Set<Integer> chosenAnswersSet = new LinkedHashSet<>();
             // aktualnie wybrane/wylosowane odpowiedzi (juz uzyte)
@@ -88,33 +101,6 @@ public class QuizService {
             // 3,4,1,2
             int correctAnswerNumber = r.nextInt(4); // np. 2, numer poprawnej odpowiedzi (z listy answers)
 
-
-            int tab[] = {2, 6, 7, 8};
-            int el1 = 0; // 0
-            int el2 = 2; // correctAnswerNumber
-
-            int tmp = tab[el2];
-            tab[el2] = tab[el1];
-            tab[el1] = tmp;
-
-            /*
-            // standardowy swap napisany recznie:
-            tmp = chosenAnswers.get(correctAnswerNumber);
-            chosenAnswers.set(correctAnswerNumber, chosenAnswers.get(0));
-            chosenAnswers.set(0, tmp);
-            */
-
-            // jednolijkowy swap (brzydki):
-            // chosenAnswers.set(0,(chosenAnswers.set(correctAnswerNumber, chosenAnswers.get(0))));
-
-            // produkcyjne, najczytelniejsze, najkrotsze
-            // Collections.swap(correctAnswers, 0, correctAnswerNumber);
-
-            // tworczy pomysl, nie do konca swap:
-            // 2,6,7,8
-            // 6,7,8 (2 zapamietane - correctAnswer)
-            // 6,7,2,8
-            // add(indeks, wartosc) - dodaje wartosc pod dany indeks i przesuwa to co w nim bylo w prawo (razem z reszta elementow)
             Integer correctAnswer = chosenAnswers.remove(0);//  4,1,2
             chosenAnswers.add(correctAnswerNumber, correctAnswer); // 4,1,3,2
 
@@ -124,85 +110,15 @@ public class QuizService {
                 answers.add(correctAnswers.get(answerNumber));
             }
 
-            quiz.getAnswers().add(answers);
-            quiz.getCorrectAnswers().add(correctAnswerNumber);
-            // przechodzimy po kazdym slowie/dla kazdego slowa i tworzymy liste odpowiedzi do niego (answers)
-            // przygotowujemy dla danego slowa liste "answers"
-            // na miejscu 'i' jest odpowiedz dla danego slowa w correctAnswers
-            // trzeba wylosowac pozostale 3 odpowiedzi
+            QuizQuestion quizQuestion = new QuizQuestion();
+            quizQuestion.setWord(randomWords.get(i).getWord());
+            quizQuestion.setAnswers(answers);
+            quizQuestion.setCorrectAnswer(correctAnswerNumber);
+            quizQuestions.add(quizQuestion);
+            //quiz.getQuizQuestions().get(i).setAnswers(answers);
+            //quiz.getQuizQuestions().get(i).setCorrectAnswer(correctAnswerNumber);
         }
-
-
-
-       /* String correctAnswer = correctAnswers.get(r.nextInt(correctAnswers.size()));
-        answers.add(correctAnswer);
-
-        List<Word> words = wordsService.getWords();
-
-        Word word = wordsService.getWords().get(r.nextInt(words.size()));
-        String wordFromList = word.getWord();
-        answers.add(wordFromList);// x3?
-        }*/
-
-
-        int i = 0;
-        // slowo = quiz.getWords().get(i)
-        // tlumaczenie = correctAnswers.get(i)
-        // odpowiedzi = {tlumaczenie, ..., ..., ...}
-
-        /*
-        words:
-        kot
-        pies
-        lew
-        ryba
-        waz
-        dzik
-
-        correctAnswers:
-        cat
-        dog
-        lion
-        fish
-        snake
-        boar
-
-        zadanie: wybranie odpowiedzi do slowa kot (idx 0)
-        wiemy od razu ze poprawne jest cat (idx 0)
-        correctAnswers.remove(0) - cat
-        correctAnswers.remove(1) - dog
-        correctAnswers.remove(2) - lion
-        correctAnswers.remove(3) - fish
-
-        ^to zadziala, ale tylko raz. usunie calkowicie z listy, wiec nie uzyjemy dla dalszych slow
-        pies (idx 1)
-        boar (idx 1) <- tu sie sypie, bo to nie jest odpowiednie tlumaczenie
-
-        usuwanie z listy jest !*okej*!, ale trzeba by bylo zrobic kopie tej listy
-
-        mozna losowac numerek odpowiedzi
-        numerkiOdpowiedzi = []
-        lew (idx 2) -> numerkiOdpowiedzi = [2] <- to wiemy od razu
-        szukamy kolejnych
-        losujemy nr 4 -> numerkiOdpowiedzi = [2,4]
-        losujemy nr 2 -> numerkiOdpowiedzi = [2,4]
-        ...
-        numerkiOdpowiedzi = [2*,4,1,5]
-        prawidlowa odpowiedz jest z przodu (miejsce 0) - dobrze ja przesunac
-
-        mozna ja przesunac losowo w prawo w tablicy/liscie (od 0 do 3)
-        losujemy 2:
-        numerkiOdpowiedzi = [4,1,2,5]
-        odpowiedzi(answers) = [snake, dog, lion, boar]
-        numerPoprawnej = 2
-
-         */
-
-        //wordsIds.get(0); // id slowa
-        // dla tego slowa szukasz poprawnej odpowiedzi
-        // szukasz 3 kolejnych odpowiedzi, niepoprawnych
-        // laczysz w calosc, wybierajac na ktorym miejscu bedzie dobra odpowiedz
-        // powtarzasz calosc 10 razy
+        quiz.setQuizQuestions(quizQuestions);
     }
 
     // TODO
@@ -232,8 +148,9 @@ public class QuizService {
             Translation translation = translations.get(random.nextInt(translations.size())); // TODO do sprawdzenia translations.size() moze byc rowne 0?
             String quote = translation.getQuote();
             if (Type.IDIOM.equals(translation.getType())) {
-                quiz.setWord(wordIdx, translation.getPhrase()); // list.set(index, wartosc)
-                //quiz.getWords().set(i, translation.getPhrase());
+                List<QuizQuestion> quizQuestions = quiz.getQuizQuestions();
+                QuizQuestion quizQuestion = quizQuestions.get(wordIdx);
+                quizQuestion.setWord(translation.getPhrase());
             }
 
             return quote;
@@ -242,26 +159,11 @@ public class QuizService {
     }
 
     public List<Boolean> calculateResults(Quiz quiz, QuizAnswers quizAnswers) {
-        List<Integer> correctAnswers = quiz.getCorrectAnswers();
+        List<Integer> correctAnswers = quiz.getQuizQuestions().stream().map(question -> question.getCorrectAnswer()).toList();
         List<Integer> answersFromUser = quizAnswers.getAnswers();
-        List<Integer> wrongAnswers = new ArrayList<>();
         List<Boolean> results = new ArrayList<>();
         for (int i = 0; i < correctAnswers.size(); i++) {
-            /*if (Objects.equals(correctAnswers.get(i), answersFromUser.get(i))) { // bezpieczne z wartosciami null po obu stronach
-                wrongAnswers.add(i);
-            }
-            if (correctAnswers.get(i).equals(answersFromUser.get(i))) { // bezpieczne z wartoscia null po prawej stronie
-                wrongAnswers.add(i);
-            }
-            if (correctAnswers.get(i).equals(answersFromUser.get(i)))  {
-                answers.add(true);
-            } else {
-                answers.add(false);
-            }*/
             results.add(correctAnswers.get(i).equals(answersFromUser.get(i))); // answers.add(correctAnswers.get(i).equals(answersFromUser.get(i)) ? true : false);
-            /*
-            answers.add(true) to to samo co answers.add(true ? true : false) (to pierwsze jest preferowane)
-             */
         }
 
         return results;
