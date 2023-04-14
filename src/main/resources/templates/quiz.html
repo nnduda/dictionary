@@ -11,27 +11,30 @@
                 <th>Words</th>
                 <th>Answers</th>
             </tr>
-            <!--<tr th:each="word : ${quiz.words}">
-                <td th:text="${word}"/>
-                &lt;!&ndash;<div>&ndash;&gt;
-                    <td th:each="answer : ${quiz.answers.get(__${wordStat.index}__)}">
-                        <p th:text="${answer}"></p>
-                        <input type="checkbox"/>
-                        &lt;!&ndash; radio || select &ndash;&gt;
-                    </td>
-                &lt;!&ndash;</div>&ndash;&gt;
-            </tr>-->
+
+            <tr th:each="quizQuestion : ${quiz.quizQuestions}">
+                <td th:text="${quizQuestion.word}"/>
+                <td>
+                    <select th:field="*{answers[__${quizQuestionStat.index}__]}">
+                        <option th:value="-1" selected disabled hidden>Choose answer</option>
+                        <option th:each="answer : ${quizQuestion.answers}"
+                                th:value="${answerStat.index}" th:text="${answer}">
+                        </option>
+                    </select>
+                </td>
+            </tr>
+<!--
             <tr th:each="word : ${quiz.words}">
                 <td th:text="${word}"/>
                 <td>
-                    <select th:field="*{answers[__${wordStat.index}__]}"> <!--  -->
+                    <select th:field="*{answers[__${wordStat.index}__]}"> &lt;!&ndash;  &ndash;&gt;
                         <option th:value="-1" selected disabled hidden>Choose answer</option>
                         <option th:each="answer : ${quiz.answers.get(__${wordStat.index}__)}"
                                 th:value="${answerStat.index}" th:text="${answer}">
                         </option>
                     </select>
                 </td>
-            </tr>
+            </tr>-->
         </table>
         <input type="submit" th:value="Wyslij"/>
     </form>

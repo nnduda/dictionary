@@ -14,8 +14,8 @@ public class QuizQuestion {
     private Long id;
     private String word;
     @Convert(converter = StringListConverter.class)
-    private List<String> answers; // 10 elementow po 4 tlumaczenia kazdy
-    private int correctAnswer; // numery poprawnych odpowiedzi, mogloby to tez byc List<String>
+    private List<String> answers; // 4 tlumaczenia
+    private int correctAnswer; // numer poprawnej odpowiedzi
 
     public QuizQuestion() {
     }

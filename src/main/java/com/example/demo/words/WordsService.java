@@ -97,37 +97,6 @@ public class WordsService {
     }
 
     public void saveAndMergeDuplicates(List<com.example.demo.model.xml.Word> words) {
-/*
-        // rozwiazanie na liscie
-        for (int i = 0; i < words.size(); i++) {
-            for (int j = i + 1; j < words.size(); j++) {
-                if (words.get(i).equals(words.get(j))) {
-                    words.get(j).addTranslations(words.get(i).getTranslations());
-                    words.remove(i);
-                }
-            }
-        }
-*/
-
-        /*
-        0 - 1,2,3,4,5...
-        1 - 2,3,4,5...
-        2 - 3,4,5...
-         */
-
-        // rozwiazanie na mapie v1
-        /*Map<String, com.example.demo.model.xml.Word> wordHashMap = new HashMap();
-        for (com.example.demo.model.xml.Word word : words) {
-            String wordValue = word.getWord();
-            if (wordHashMap.containsKey(wordValue)) { // merge
-                com.example.demo.model.xml.Word currentWord = wordHashMap.get(wordValue);
-                word.addTranslations(currentWord.getTranslations());
-            }
-            wordHashMap.put(wordValue, word);
-        }
-
-        words.clear();
-        words.addAll(wordHashMap.values());*/
 
         // rozwiazanie na mapie v2 (z merge)
         Map<String, com.example.demo.model.xml.Word> wordHashMap = new HashMap<>();
@@ -136,28 +105,9 @@ public class WordsService {
             wordHashMap.merge(wordValue, word, com.example.demo.model.xml.Word::merge);
         }
 
-
         words.clear();
         words.addAll(wordHashMap.values());
-        /*Map<String, Long> wordHashMap = new HashMap<>();
-        for (com.example.demo.model.xml.Word word : words) {
-            if (wordHashMap.containsKey(word.getWord())) {
 
-                // cat - 15
-                // dog - 30
-                // snake - 45
-
-                // cat - 60
-
-
-
-                Long aLong = wordHashMap.get(word.getWord());
-
-            } else
-                wordHashMap.put(word.getWord(), word.getId());
-        }*/
-
-        // TODO* zmiana rozwiazania z HashMapą na strumien
         Map<String, com.example.demo.model.xml.Word> wordHashMap2 = words.stream()
                 .collect(Collectors.toMap(
                         word -> word.getWord(),
@@ -165,7 +115,6 @@ public class WordsService {
                         com.example.demo.model.xml.Word::merge)
                 );
         Word word = new Word();
-
 
         wordsRepository.saveAll(words);
     }

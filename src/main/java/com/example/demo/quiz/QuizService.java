@@ -24,26 +24,13 @@ public class QuizService {
     public Quiz createRandomQuiz() {
         Quiz quiz = new Quiz(QuizType.TRANSLATIONS, QuizDataType.RANDOM);
         List<Word> randomWords = getRandomWords(10);
-        //fillQuizQuestions(quiz, randomWords);
-        // TODO wordsIds moze byc wyliczane w prepareAnswers
-        List<Long> wordsIds = randomWords.stream()
-                .map(Word::getId)
-                .toList();
         try {
-            prepareAnswers(quiz, randomWords, wordsIds);
+            prepareQuizQuestions(quiz, randomWords);
         } catch (AnswerNotFoundException e) {
             System.out.println("Nie znaleziono odpowiedzi dla slowa o id " + e.getId());
             e.printStackTrace();
         }
         return quiz;
-    }
-
-    private void fillQuizQuestions(Quiz quiz, List<Word> randomWords) {
-        List<QuizQuestion> quizQuestions = new ArrayList<>();
-        for (Word word : randomWords) {
-            quizQuestions.add(new QuizQuestion(word.getWord()));
-        }
-        quiz.setQuizQuestions(quizQuestions);
     }
 
     private List<Word> getRandomWords(int wordsCount) {
@@ -73,10 +60,12 @@ public class QuizService {
         return wordsIds;
     }
 
-    // TODO nazwa delikatnie do zmiany jesli tworzymy tutaj QuizQuestions
-    private void prepareAnswers(Quiz quiz, List<Word> randomWords, List<Long> wordsIds) throws AnswerNotFoundException { // wordsIds - identyfikatory slow: "dog","cat","turtle","lion","fish"
+    private void prepareQuizQuestions(Quiz quiz, List<Word> randomWords) throws AnswerNotFoundException { // wordsIds - identyfikatory slow: "dog","cat","turtle","lion","fish"
         List<String> correctAnswers = new ArrayList<>(); // poprawne odpowiedzi dla kolejnych slow np. lista: pies, kot, zolw, lew, ryba
 
+        List<Long> wordsIds = randomWords.stream()
+                .map(Word::getId)
+                .toList();
 
         // wyszukiwanie tlumaczen/znaczen
         for (int i = 0; i < wordsIds.size(); i++) {
@@ -115,8 +104,6 @@ public class QuizService {
             quizQuestion.setAnswers(answers);
             quizQuestion.setCorrectAnswer(correctAnswerNumber);
             quizQuestions.add(quizQuestion);
-            //quiz.getQuizQuestions().get(i).setAnswers(answers);
-            //quiz.getQuizQuestions().get(i).setCorrectAnswer(correctAnswerNumber);
         }
         quiz.setQuizQuestions(quizQuestions);
     }
@@ -139,6 +126,7 @@ public class QuizService {
      * @param wordId identyfikator slowa.
      * @return znaleziona odpowiedz.
      */
+    // TODO do zastanowienia (priorytetowo)!
     private String getAnswer(Long wordId, int wordIdx, Quiz quiz) throws AnswerNotFoundException {
         Random random = new Random();
         Optional<Word> wordOptional = wordsService.getWordById(wordId);
@@ -148,6 +136,12 @@ public class QuizService {
             Translation translation = translations.get(random.nextInt(translations.size())); // TODO do sprawdzenia translations.size() moze byc rowne 0?
             String quote = translation.getQuote();
             if (Type.IDIOM.equals(translation.getType())) {
+                // podmiana slowa jest konieczna
+                // w quizie chcemy zmienic slowo o numerze wordIdx na translation.getPhrase()
+                // jesli np. slowo o numerze 3 okazalo sie miec tlumaczenie idiom to podmieniamy je na phrase
+
+
+                // quizQuestions jeszcze nie istnieja (pusta lista), więc tych linijek nizej nie bedzie
                 List<QuizQuestion> quizQuestions = quiz.getQuizQuestions();
                 QuizQuestion quizQuestion = quizQuestions.get(wordIdx);
                 quizQuestion.setWord(translation.getPhrase());
