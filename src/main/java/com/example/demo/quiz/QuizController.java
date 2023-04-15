@@ -30,12 +30,35 @@ public class QuizController {
     @GetMapping("/random")
     public ModelAndView getRandomQuiz() {
         ModelAndView mv = new ModelAndView("quiz");
-        mv.addObject("quiz", quizService.createRandomQuiz());
+        Quiz randomQuiz = quizService.createRandomQuiz();
+        mv.addObject("quiz", randomQuiz);
         // TODO Zamienic Note na jakis prosty obiekt (np. obiekt z jednym Stringiem i liczba) - nie ma to byc encja
         // potem podmienic wszedzie Note (kontroler + widok) na ten nowy obiekt
         mv.addObject("note", new Note("example note"));
         mv.addObject("quizAnswers", new QuizAnswers());
-        return mv;
+
+        print(randomQuiz);
+
+        //return mv; // TODO od odkomentowania
+        return null;
+    }
+
+    // TODO do usuniecia
+    private void print(Quiz quiz) {
+        System.out.println("Quiz:");
+        System.out.println("id: " + quiz.getId());
+        System.out.println("quiz type: " + quiz.getQuizType());
+        System.out.println("quiz data type: " + quiz.getQuizDataType());
+
+        System.out.println("Questions:");
+        for (QuizQuestion quizQuestion : quiz.getQuizQuestions()) {
+            System.out.println("question id: " + quizQuestion.getId());
+            System.out.println("word: " + quizQuestion.getWord());
+            for (String answer : quizQuestion.getAnswers()) {
+                System.out.println("answer: " + answer);
+            }
+            System.out.println("correct answer: " + quizQuestion.getCorrectAnswer());
+        }
     }
 
     @PostMapping
@@ -52,4 +75,3 @@ public class QuizController {
     }
 }
 
-// cos do wyswietlania wyników

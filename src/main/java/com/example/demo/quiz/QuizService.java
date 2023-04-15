@@ -70,7 +70,7 @@ public class QuizService {
         // wyszukiwanie tlumaczen/znaczen
         for (int i = 0; i < wordsIds.size(); i++) {
             if (QuizType.TRANSLATIONS.equals(quiz.getQuizType())) {
-                correctAnswers.add(getAnswer(wordsIds.get(i), i, quiz));
+                correctAnswers.add(getAnswer(wordsIds.get(i), i, quiz, randomWords));
             } else if (QuizType.MEANINGS.equals(quiz.getQuizType())) {
                 correctAnswers.add(getAnswer(quiz.getQuizQuestions().get(i).getWord())); // TODO do zmiany analogicznie jak translations?
             }
@@ -123,11 +123,13 @@ public class QuizService {
     /**
      * Pobranie odpowiedzi dla slowa o podanym wordId z bazy danych.
      *
-     * @param wordId identyfikator slowa.
+     * @param wordId  identyfikator slowa w bazie danych
+     * @param wordIdx indeks z petli (numer slowa w quizie)
+     * @param quiz    quiz
      * @return znaleziona odpowiedz.
      */
     // TODO do zastanowienia (priorytetowo)!
-    private String getAnswer(Long wordId, int wordIdx, Quiz quiz) throws AnswerNotFoundException {
+    private String getAnswer(Long wordId, int wordIdx, Quiz quiz, List<Word> randomWords) throws AnswerNotFoundException {
         Random random = new Random();
         Optional<Word> wordOptional = wordsService.getWordById(wordId);
         if (wordOptional.isPresent()) {
@@ -136,15 +138,8 @@ public class QuizService {
             Translation translation = translations.get(random.nextInt(translations.size())); // TODO do sprawdzenia translations.size() moze byc rowne 0?
             String quote = translation.getQuote();
             if (Type.IDIOM.equals(translation.getType())) {
-                // podmiana slowa jest konieczna
-                // w quizie chcemy zmienic slowo o numerze wordIdx na translation.getPhrase()
-                // jesli np. slowo o numerze 3 okazalo sie miec tlumaczenie idiom to podmieniamy je na phrase
-
-
-                // quizQuestions jeszcze nie istnieja (pusta lista), więc tych linijek nizej nie bedzie
-                List<QuizQuestion> quizQuestions = quiz.getQuizQuestions();
-                QuizQuestion quizQuestion = quizQuestions.get(wordIdx);
-                quizQuestion.setWord(translation.getPhrase());
+                randomWords.get(wordIdx).setWord(translation.getPhrase());
+                return translation.getQuote();
             }
 
             return quote;
