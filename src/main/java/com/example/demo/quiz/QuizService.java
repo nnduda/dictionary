@@ -63,28 +63,26 @@ public class QuizService {
     private void prepareQuizQuestions(Quiz quiz, List<Word> randomWords) throws AnswerNotFoundException { // wordsIds - identyfikatory slow: "dog","cat","turtle","lion","fish"
         List<String> correctAnswers = new ArrayList<>(); // poprawne odpowiedzi dla kolejnych slow np. lista: pies, kot, zolw, lew, ryba
 
-        List<Long> wordsIds = randomWords.stream()
-                .map(Word::getId)
-                .toList();
+        int numberOfWords = randomWords.size();
 
         // wyszukiwanie tlumaczen/znaczen
-        for (int i = 0; i < wordsIds.size(); i++) {
+        for (Word randomWord : randomWords) {
             if (QuizType.TRANSLATIONS.equals(quiz.getQuizType())) {
-                correctAnswers.add(getAnswer(wordsIds.get(i), i, quiz, randomWords));
+                correctAnswers.add(getAnswer(randomWord));
             } else if (QuizType.MEANINGS.equals(quiz.getQuizType())) {
-                correctAnswers.add(getAnswer(quiz.getQuizQuestions().get(i).getWord())); // TODO do zmiany analogicznie jak translations?
+                correctAnswers.add(getAnswer(randomWord.getWord()));
             }
         }
 
         Random r = new Random();
         List<QuizQuestion> quizQuestions = new ArrayList<>();
-        for (int i = 0; i < wordsIds.size(); i++) {
+        for (int i = 0; i < numberOfWords; i++) {
             Set<Integer> chosenAnswersSet = new LinkedHashSet<>();
             // aktualnie wybrane/wylosowane odpowiedzi (juz uzyte)
             chosenAnswersSet.add(i); // dodanie numeru poprawnej odpowiedzi
             // losowanie 3 pozostalych odpowiedzi:
             while (chosenAnswersSet.size() != 4) {
-                chosenAnswersSet.add(r.nextInt(wordsIds.size()));
+                chosenAnswersSet.add(r.nextInt(numberOfWords));
             }
             List<Integer> chosenAnswers = new ArrayList<>(chosenAnswersSet);
             // 3,4,1,2
@@ -123,28 +121,20 @@ public class QuizService {
     /**
      * Pobranie odpowiedzi dla slowa o podanym wordId z bazy danych.
      *
-     * @param wordId  identyfikator slowa w bazie danych
-     * @param wordIdx indeks z petli (numer slowa w quizie)
-     * @param quiz    quiz
+     * @param word wylosowane slowo dla ktorego pobieramy odpowiedz
      * @return znaleziona odpowiedz.
      */
     // TODO do zastanowienia (priorytetowo)!
-    private String getAnswer(Long wordId, int wordIdx, Quiz quiz, List<Word> randomWords) throws AnswerNotFoundException {
+    private String getAnswer(Word word) {
         Random random = new Random();
-        Optional<Word> wordOptional = wordsService.getWordById(wordId);
-        if (wordOptional.isPresent()) {
-            Word word = wordOptional.get();
-            List<Translation> translations = word.getTranslations();
-            Translation translation = translations.get(random.nextInt(translations.size())); // TODO do sprawdzenia translations.size() moze byc rowne 0?
-            String quote = translation.getQuote();
-            if (Type.IDIOM.equals(translation.getType())) {
-                randomWords.get(wordIdx).setWord(translation.getPhrase());
-                return translation.getQuote();
-            }
-
-            return quote;
+        List<Translation> translations = word.getTranslations();
+        Translation translation = translations.get(random.nextInt(translations.size())); // TODO do sprawdzenia translations.size() moze byc rowne 0?
+        String quote = translation.getQuote();
+        if (Type.IDIOM.equals(translation.getType())) {
+            word.setWord(translation.getPhrase());
+            return translation.getQuote();
         }
-        throw new AnswerNotFoundException(wordId);
+        return quote;
     }
 
     public List<Boolean> calculateResults(Quiz quiz, QuizAnswers quizAnswers) {
