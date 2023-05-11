@@ -24,6 +24,10 @@ public class Quiz {
     @JoinColumn(name = "quiz_id") // kolumna z tablicy quiz
     private List<QuizQuestion> quizQuestions;
 
+    public Quiz() {
+
+    }
+
     public Quiz(QuizType quizType, QuizDataType quizDataType) {
         this.quizType = quizType;
         this.quizDataType = quizDataType;

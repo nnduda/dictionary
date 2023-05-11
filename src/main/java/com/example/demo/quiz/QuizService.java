@@ -17,6 +17,9 @@ public class QuizService {
     private WordsService wordsService;
 
     @Autowired
+    private QuizRepository quizRepository;
+
+    @Autowired
     public QuizService(WordsService wordsService) {
         this.wordsService = wordsService;
     }
@@ -30,7 +33,15 @@ public class QuizService {
             System.out.println("Nie znaleziono odpowiedzi dla slowa o id " + e.getId());
             e.printStackTrace();
         }
-        return quiz;
+        return addToDatabase(quiz);
+    }
+
+    private Quiz addToDatabase(Quiz quiz) {
+        return quizRepository.save(quiz);
+    }
+
+    public Optional<Quiz> findById(Long quizId) {
+        return quizRepository.findById(quizId);
     }
 
     private List<Word> getRandomWords(int wordsCount) {

@@ -1,6 +1,9 @@
 package com.example.demo.quiz;
 
-import com.example.demo.model.*;
+import com.example.demo.model.Note;
+import com.example.demo.model.Quiz;
+import com.example.demo.model.QuizAnswers;
+import com.example.demo.model.QuizQuestion;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -9,6 +12,9 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
+
+import java.util.List;
+import java.util.Optional;
 
 @Controller
 @RequestMapping("quiz")
@@ -34,13 +40,13 @@ public class QuizController {
         mv.addObject("quiz", randomQuiz);
         // TODO Zamienic Note na jakis prosty obiekt (np. obiekt z jednym Stringiem i liczba) - nie ma to byc encja
         // potem podmienic wszedzie Note (kontroler + widok) na ten nowy obiekt
+        // chodzi o to, zeby w Note nie bylo tych wszystkich niepotrzebnych pol typu id, referenceTableId itp., czyli zrobic obiekt transportowy
         mv.addObject("note", new Note("example note"));
-        mv.addObject("quizAnswers", new QuizAnswers());
+        mv.addObject("quizAnswers", new QuizAnswers(randomQuiz.getId()));
 
         print(randomQuiz);
 
-        //return mv; // TODO od odkomentowania
-        return null;
+        return mv;
     }
 
     // TODO do usuniecia
@@ -69,9 +75,10 @@ public class QuizController {
 
     @PostMapping("/random") // TODO zmiana nazwy?
     public ResponseEntity<Object> postAnswers(@ModelAttribute("quizAnswers") QuizAnswers quizAnswers) {
-        Quiz quiz = new Quiz(QuizType.TRANSLATIONS, QuizDataType.RANDOM);
-        quizService.calculateResults(quiz, quizAnswers);
-        return ResponseEntity.ok(quizAnswers.getAnswers());
+        Optional<Quiz> quizOpt = quizService.findById(quizAnswers.getQuizId());
+        Quiz quiz = quizOpt.get();
+        List<Boolean> results = quizService.calculateResults(quiz, quizAnswers);
+        return ResponseEntity.ok(results);
     }
 }
 

@@ -6,6 +6,7 @@
 </head>
 <body>
     <form action="#" th:action="@{/quiz/random}" th:object="${quizAnswers}" method="post">
+        <input type="hidden" th:field="*{quizId}">
         <table>
             <tr>
                 <th>Words</th>
@@ -13,7 +14,7 @@
             </tr>
 
             <tr th:each="quizQuestion : ${quiz.quizQuestions}">
-                <td th:text="${quizQuestion.word}"/>
+                <td th:text="${quizQuestion.word}"></td>
                 <td>
                     <select th:field="*{answers[__${quizQuestionStat.index}__]}">
                         <option th:value="-1" selected disabled hidden>Choose answer</option>
@@ -23,19 +24,6 @@
                     </select>
                 </td>
             </tr>
-            <!-- TODO poprawic wyswietlanie bo po zmianach nie dziala -->
-<!--
-            <tr th:each="word : ${quiz.words}">
-                <td th:text="${word}"/>
-                <td>
-                    <select th:field="*{answers[__${wordStat.index}__]}"> &lt;!&ndash;  &ndash;&gt;
-                        <option th:value="-1" selected disabled hidden>Choose answer</option>
-                        <option th:each="answer : ${quiz.answers.get(__${wordStat.index}__)}"
-                                th:value="${answerStat.index}" th:text="${answer}">
-                        </option>
-                    </select>
-                </td>
-            </tr>-->
         </table>
         <input type="submit" th:value="Wyslij"/>
     </form>
@@ -48,15 +36,5 @@
         <input type="text" th:field="${note.note}"/> <!-- Note note; note.note = text z pola -->
         <input type="submit" th:value="Wyslij"/>
     </form>
-    <table>
-        <tr>
-            <th>Words</th>
-            <th>Answers</th>
-        </tr>
-        <tr th:each="word : ${quiz.words}">
-            <td th:text="${word}"/>
-            <td th:each="answer : ${quiz.answers.get(__${wordStat.index}__)}" th:text="${answer}"/>
-        </tr>
-    </table>
 </body>
 </html>
