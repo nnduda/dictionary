@@ -3,7 +3,6 @@ package com.example.demo.quiz;
 import com.example.demo.model.Note;
 import com.example.demo.model.Quiz;
 import com.example.demo.model.QuizAnswers;
-import com.example.demo.model.QuizQuestion;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -44,36 +43,28 @@ public class QuizController {
         mv.addObject("note", new Note("example note"));
         mv.addObject("quizAnswers", new QuizAnswers(randomQuiz.getId()));
 
-        print(randomQuiz);
-
         return mv;
     }
 
-    // TODO do usuniecia
-    private void print(Quiz quiz) {
-        System.out.println("Quiz:");
-        System.out.println("id: " + quiz.getId());
-        System.out.println("quiz type: " + quiz.getQuizType());
-        System.out.println("quiz data type: " + quiz.getQuizDataType());
+    @GetMapping("/searched")
+    public ModelAndView getSearchedWordsQuiz() {
+        ModelAndView mv = new ModelAndView("quiz");
+        Quiz searchedWordsQuiz = quizService.createSearchedWordsQuiz();
+        mv.addObject("quiz", searchedWordsQuiz);
+        mv.addObject("note", new Note("example note"));
+        mv.addObject("quizAnswers", new QuizAnswers(searchedWordsQuiz.getId()));
 
-        System.out.println("Questions:");
-        for (QuizQuestion quizQuestion : quiz.getQuizQuestions()) {
-            System.out.println("question id: " + quizQuestion.getId());
-            System.out.println("word: " + quizQuestion.getWord());
-            for (String answer : quizQuestion.getAnswers()) {
-                System.out.println("answer: " + answer);
-            }
-            System.out.println("correct answer: " + quizQuestion.getCorrectAnswer());
-        }
+        return mv;
+
     }
 
-    @PostMapping
+    @PostMapping("/postNote")
     public ResponseEntity<Note> postNote(@ModelAttribute("note") Note note) {
 
         return ResponseEntity.ok(note);
     }
 
-    @PostMapping("/random") // TODO zmiana nazwy?
+    @PostMapping
     public ResponseEntity<Object> postAnswers(@ModelAttribute("quizAnswers") QuizAnswers quizAnswers) {
         Optional<Quiz> quizOpt = quizService.findById(quizAnswers.getQuizId());
         Quiz quiz = quizOpt.get();

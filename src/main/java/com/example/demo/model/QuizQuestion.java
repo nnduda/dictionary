@@ -5,7 +5,7 @@ import lombok.Data;
 import javax.persistence.*;
 import java.util.List;
 
-@Entity(name = "quizquestions")
+@Entity(name = "quiz_questions")
 @Data
 public class QuizQuestion {
 

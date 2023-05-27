@@ -5,30 +5,56 @@ import com.example.demo.model.*;
 import com.example.demo.model.xml.Translation;
 import com.example.demo.model.xml.Type;
 import com.example.demo.model.xml.Word;
+import com.example.demo.words.SearchedWord;
+import com.example.demo.words.SearchedWordService;
 import com.example.demo.words.WordsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.function.IntFunction;
+import java.util.stream.Collectors;
 
 @Service
 public class QuizService {
 
     private WordsService wordsService;
 
+    private SearchedWordService searchedWordService;
+
     @Autowired
     private QuizRepository quizRepository;
 
     @Autowired
-    public QuizService(WordsService wordsService) {
+    public QuizService(WordsService wordsService, SearchedWordService searchedWordService) {
         this.wordsService = wordsService;
+        this.searchedWordService = searchedWordService;
+    }
+
+    // TODO*** wspolna funkcja do tworzenia quizow
+    public Quiz createQuiz(QuizType quizType, QuizDataType quizDataType, IntFunction<List<Word>> getWordsFunction) {
+
+        return null;
     }
 
     public Quiz createRandomQuiz() {
         Quiz quiz = new Quiz(QuizType.TRANSLATIONS, QuizDataType.RANDOM);
         List<Word> randomWords = getRandomWords(10);
+
         try {
             prepareQuizQuestions(quiz, randomWords);
+        } catch (AnswerNotFoundException e) {
+            System.out.println("Nie znaleziono odpowiedzi dla slowa o id " + e.getId());
+            e.printStackTrace();
+        }
+        return addToDatabase(quiz);
+    }
+
+    public Quiz createSearchedWordsQuiz() {
+        Quiz quiz = new Quiz(QuizType.TRANSLATIONS, QuizDataType.PRESELECT);
+        List<Word> searchedWords = getSearchedWords(10);
+        try {
+            prepareQuizQuestions(quiz, searchedWords);
         } catch (AnswerNotFoundException e) {
             System.out.println("Nie znaleziono odpowiedzi dla slowa o id " + e.getId());
             e.printStackTrace();
@@ -55,6 +81,16 @@ public class QuizService {
         return words;
     }
 
+    private List<Word> getSearchedWords(int wordsCount) {
+
+        List<SearchedWord> searchedWords = searchedWordService.getSearchedWords(wordsCount);
+
+        List<Long> idsList = searchedWords.stream().map(searchedWord -> searchedWord.getWordId()).collect(Collectors.toList());
+
+        List<Word> allById = wordsService.findAllById(idsList);
+        return allById;
+    }
+
     private List<Long> setWordsAndGetWordsIds(Quiz quiz) {
         List<String> words = new ArrayList<>();
         List<Long> wordsIds = new ArrayList<>();
@@ -73,6 +109,10 @@ public class QuizService {
 
     private void prepareQuizQuestions(Quiz quiz, List<Word> randomWords) throws AnswerNotFoundException { // wordsIds - identyfikatory slow: "dog","cat","turtle","lion","fish"
         List<String> correctAnswers = new ArrayList<>(); // poprawne odpowiedzi dla kolejnych slow np. lista: pies, kot, zolw, lew, ryba
+        if (randomWords.size() < 4) {
+            System.out.println("Zbyt malo slow w quizie");
+            return;
+        }
 
         int numberOfWords = randomWords.size();
 
@@ -117,7 +157,7 @@ public class QuizService {
         quiz.setQuizQuestions(quizQuestions);
     }
 
-    // TODO
+    // TODO quizy ze znaczeniami
 
     /**
      * Pobranie odpowiedzi dla slowa o podanym wordId z zewnetrznego API.
@@ -135,11 +175,10 @@ public class QuizService {
      * @param word wylosowane slowo dla ktorego pobieramy odpowiedz
      * @return znaleziona odpowiedz.
      */
-    // TODO do zastanowienia (priorytetowo)!
     private String getAnswer(Word word) {
         Random random = new Random();
         List<Translation> translations = word.getTranslations();
-        Translation translation = translations.get(random.nextInt(translations.size())); // TODO do sprawdzenia translations.size() moze byc rowne 0?
+        Translation translation = translations.get(random.nextInt(translations.size()));
         String quote = translation.getQuote();
         if (Type.IDIOM.equals(translation.getType())) {
             word.setWord(translation.getPhrase());
@@ -149,14 +188,14 @@ public class QuizService {
     }
 
     public List<Boolean> calculateResults(Quiz quiz, QuizAnswers quizAnswers) {
-        List<Integer> correctAnswers = quiz.getQuizQuestions().stream().map(question -> question.getCorrectAnswer()).toList();
+        List<Integer> correctAnswers = quiz.getQuizQuestions().stream()
+                .map(question -> question.getCorrectAnswer()).toList();
         List<Integer> answersFromUser = quizAnswers.getAnswers();
         List<Boolean> results = new ArrayList<>();
         for (int i = 0; i < correctAnswers.size(); i++) {
-            results.add(correctAnswers.get(i).equals(answersFromUser.get(i))); // answers.add(correctAnswers.get(i).equals(answersFromUser.get(i)) ? true : false);
+            results.add(correctAnswers.get(i).equals(answersFromUser.get(i)));
         }
 
         return results;
-
     }
 }

@@ -8,10 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static java.util.Objects.isNull;
@@ -25,17 +22,32 @@ public class WordsService {
 
     RestTemplate restTemplate;
 
+    SearchedWordService searchedWordService;
+
     @Autowired
-    public WordsService(WordsRepository wordsRepository, RestTemplate restTemplate) {
+    public WordsService(WordsRepository wordsRepository, RestTemplate restTemplate, SearchedWordService searchedWordService) {
         this.wordsRepository = wordsRepository;
         this.restTemplate = restTemplate;
+        this.searchedWordService = searchedWordService;
     }
 
     public MainWord getWord(String word) {
-        com.example.demo.model.xml.Word wordsFromDatabase = getWordFromDatabase(word);
+        com.example.demo.model.xml.Word wordFromDatabase = getWordFromDatabase(word);
         com.example.demo.model.json.Word[] wordsFromExternalApi = getWordsFromExternalApi(word);
-        MainWord mainWord = new MainWord(word, wordsFromDatabase, wordsFromExternalApi);
+        MainWord mainWord = new MainWord(word, wordFromDatabase, wordsFromExternalApi);
+        saveSearch(wordFromDatabase);
         return mainWord;
+    }
+
+    private void saveSearch(com.example.demo.model.xml.Word wordFromDatabase) {
+        if (Objects.nonNull(wordFromDatabase)) {
+            searchedWordService.saveSearchedId(wordFromDatabase.getId());
+        }
+    }
+
+    public List<com.example.demo.model.xml.Word> findAllById(List<Long> ids) {
+        List<com.example.demo.model.xml.Word> allById = wordsRepository.findAllById(ids);
+        return allById;
     }
 
     @Nullable

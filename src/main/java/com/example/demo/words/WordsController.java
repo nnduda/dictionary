@@ -45,6 +45,11 @@ public class WordsController {
         return mav;
     }
 
+    @GetMapping(value = "/search")
+    public String searchWord(Model model) {
+        return "search";
+    }
+
     @GetMapping(value = "/{id}")
     public ResponseEntity<Word> getWord(@PathVariable("id") Long id) {
         Optional<Word> word = wordsRepository.findById(id);

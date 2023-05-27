@@ -17,6 +17,7 @@ public interface WordsRepository extends JpaRepository<Word, Long> {
 
     Word findOneByWord(String word);
 
+
     List<Long> findIdsByWord(String word);
 
     // przyklady:
