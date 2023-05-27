@@ -12,7 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
-import java.util.function.*;
+import java.util.function.IntFunction;
 import java.util.stream.Collectors;
 
 @Service
@@ -31,124 +31,20 @@ public class QuizService {
         this.searchedWordService = searchedWordService;
     }
 
-    // TODO*** wspolna funkcja do tworzenia quizow
-    public Quiz createQuiz(QuizType quizType, QuizDataType quizDataType, IntFunction<List<Word>> getWordsFunction) {
-
-        return null;
-    }
-
     public Quiz createRandomQuiz() {
-        Quiz quiz = new Quiz(QuizType.TRANSLATIONS, QuizDataType.RANDOM);
-        List<Word> randomWords = getRandomWords(10);
-
-        // TODO przeniesc w inne/lepsze miejsce
-        // lambdy przyklady
-        Function<String, Integer> function = new Function<String, Integer>() {
-            @Override
-            public Integer apply(String s) {
-                return s.length();
-            }
-        };
-
-        Function<String, Integer> function2 = s -> s.length();
-
-        function.apply("abc");
-
-        randomWords.stream().filter(new Predicate<Word>() {
-            @Override
-            public boolean test(Word word) {
-                if (word.getWord().length() > 5) {
-                    return true;
-                } else {
-                    return false;
-                }
-            }
-        });
-
-
-        randomWords.stream().filter(new Predicate<Word>() {
-            @Override
-            public boolean test(Word word) {
-                return word.getWord().length() > 5 ? true : false;
-            }
-        });
-
-
-        randomWords.stream().filter(new Predicate<Word>() {
-            @Override
-            public boolean test(Word word) {
-                boolean result = word.getWord().length() > 5;
-                return result;
-            }
-        });
-
-
-        randomWords.stream().filter(new Predicate<Word>() {
-            @Override
-            public boolean test(Word word) {
-                return word.getWord().length() > 5;
-            }
-        });
-
-        randomWords.stream().filter(word -> word.getWord().length() > 5);
-
-        Supplier<Long> s = () -> 123L;
-
-        Word word = new Word();
-        functionWithFunctionalInterfaceParam((w) -> System.out.println(w), word);
-        functionWithFunctionalInterfaceParam(System.out::println, word);
-
-        // if user typed ... :
-        generateQuizzes(this::createSearchedWordsQuiz, 10);
-        // else
-        generateQuizzes(this::createRandomQuiz, 10);
-
-        // if user typed ... :
-        generateQuizzes(true, 10);
-        // else
-        generateQuizzes(false, 10);
-
-        generateQuizzes(() -> createRandomQuiz(), 10);
-
-        try {
-            prepareQuizQuestions(quiz, randomWords);
-        } catch (AnswerNotFoundException e) {
-            System.out.println("Nie znaleziono odpowiedzi dla slowa o id " + e.getId());
-            e.printStackTrace();
-        }
-        return addToDatabase(quiz);
-    }
-
-    private void functionWithFunctionalInterfaceParam(Consumer<Word> consumer, Word word) {
-        consumer.accept(word);
-        consumer.accept(word);
-    }
-
-    private List<Quiz> generateQuizzes(Supplier<Quiz> quizSupplier, int numberOfQuizzes) {
-        List<Quiz> quizList = new ArrayList<>();
-        for (int i = 0; i < numberOfQuizzes; i++) {
-            quizList.add(quizSupplier.get());
-        }
-        return quizList;
-    }
-
-    private List<Quiz> generateQuizzes(boolean random, int numberOfQuizzes) {
-        List<Quiz> quizList = new ArrayList<>();
-        for (int i = 0; i < numberOfQuizzes; i++) {
-            if (random) {
-                quizList.add(createRandomQuiz());
-            } else {
-                quizList.add(createSearchedWordsQuiz());
-            }
-        }
-        return quizList;
+        return createQuiz(QuizType.TRANSLATIONS, QuizDataType.RANDOM, wordsCount -> getRandomWords(wordsCount));
     }
 
     public Quiz createSearchedWordsQuiz() {
-        Quiz quiz = new Quiz(QuizType.TRANSLATIONS, QuizDataType.PRESELECT);
-        List<Word> searchedWords = getSearchedWords(10);
+        return createQuiz(QuizType.TRANSLATIONS, QuizDataType.PRESELECT, this::getSearchedWords);
+    }
+
+    private Quiz createQuiz(QuizType quizType, QuizDataType quizDataType, IntFunction<List<Word>> getSelectedWordsFunction) {
+        Quiz quiz = new Quiz(quizType, quizDataType);
+        List<Word> selectedWords = getSelectedWordsFunction.apply(10);
+
         try {
-            prepareQuizQuestions(quiz, searchedWords);
+            prepareQuizQuestions(quiz, selectedWords);
         } catch (AnswerNotFoundException e) {
             System.out.println("Nie znaleziono odpowiedzi dla slowa o id " + e.getId());
             e.printStackTrace();
