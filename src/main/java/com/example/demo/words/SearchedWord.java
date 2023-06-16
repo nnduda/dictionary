@@ -7,6 +7,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import java.util.Objects;
 
 @Entity(name = "searched_word")
 @Data
@@ -27,5 +28,19 @@ public class SearchedWord {
 
     public void increaseCounter() {
         this.counter += 1;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        SearchedWord that = (SearchedWord) o;
+        // bez counter bo on teoretycznie moglby sie zmienic w trakcie
+        return Objects.equals(id, that.id) && Objects.equals(wordId, that.wordId);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, wordId);
     }
 }
