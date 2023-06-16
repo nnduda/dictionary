@@ -22,16 +22,8 @@ public class SearchedWordService {
         searchedWordRepository.save(searchedWord);
     }
 
-    /*public List<SearchedWord> getSearchedWords(int wordsCount) {
-        return searchedWordRepository.getLastCreatedSearchedWords(wordsCount);
-    }*/
-
     public List<SearchedWord> getSearchedWords(int wordsCount) {
-        // wordsCount = 10
-        // searchedWordsHC = 20
-        // 20% * wordsCount = 2
-        // 80% losowe uprzednio wyszukiwane slowa
-        // 20% slowa o najwyzszym counterze (losowo)
+
         Random random = new Random();
         List<SearchedWord> searchedWordsHC = searchedWordRepository.getSearchedWordsWithHighestCounter(wordsCount);
         Collections.shuffle(searchedWordsHC);

@@ -13,9 +13,6 @@ public interface SearchedWordRepository extends JpaRepository<SearchedWord, Long
 
     Optional<SearchedWord> findByWordId(Long wordId);
 
-    @Query(value = "SELECT * FROM searched_word ORDER BY id DESC LIMIT :wordNum", nativeQuery = true)
-    List<SearchedWord> getLastCreatedSearchedWords(@Param("wordNum") int wordNum);
-
     @Query(value = "SELECT * FROM searched_word ORDER BY counter DESC LIMIT :wordNum*2", nativeQuery = true)
     List<SearchedWord> getSearchedWordsWithHighestCounter(@Param("wordNum") int wordNum);
 }
