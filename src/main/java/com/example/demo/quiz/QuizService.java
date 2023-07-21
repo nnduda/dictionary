@@ -36,7 +36,7 @@ public class QuizService {
     }
 
     public Quiz createSearchedWordsQuiz() {
-        return createQuiz(QuizType.TRANSLATIONS, QuizDataType.PRESELECT, this::getSearchedWords);
+        return createQuiz(QuizType.TRANSLATIONS, QuizDataType.PRESEARCHED, this::getSearchedWords);
     }
 
     private Quiz createQuiz(QuizType quizType, QuizDataType quizDataType, IntFunction<List<Word>> getSelectedWordsFunction) {
@@ -178,6 +178,7 @@ public class QuizService {
     }
 
     public List<Boolean> calculateResults(Quiz quiz, QuizAnswers quizAnswers) {
+        // TODO po przeniesieniu z kontrolera - do zastanowienia czy aktualna wersja bedzie do czegos przydatna
         List<Integer> correctAnswers = quiz.getQuizQuestions().stream()
                 .map(question -> question.getCorrectAnswer()).toList();
         List<Integer> answersFromUser = quizAnswers.getAnswers();

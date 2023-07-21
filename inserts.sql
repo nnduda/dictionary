@@ -1,0 +1,12 @@
+insert into SEARCHED_WORD(counter, word_id) values(64, 1234);
+insert into SEARCHED_WORD(counter, word_id) values(43, 14754);
+insert into SEARCHED_WORD(counter, word_id) values(23, 25243);
+insert into SEARCHED_WORD(counter, word_id) values(92, 8564);
+insert into SEARCHED_WORD(counter, word_id) values(33, 8534);
+insert into SEARCHED_WORD(counter, word_id) values(65, 1647);
+insert into SEARCHED_WORD(counter, word_id) values(23, 7564);
+insert into SEARCHED_WORD(counter, word_id) values(10, 3546);
+insert into SEARCHED_WORD(counter, word_id) values(5, 7465);
+insert into SEARCHED_WORD(counter, word_id) values(2, 2222);
+insert into SEARCHED_WORD(counter, word_id) values(1, 11111);
+insert into SEARCHED_WORD(counter, word_id) values(1, 3333);
