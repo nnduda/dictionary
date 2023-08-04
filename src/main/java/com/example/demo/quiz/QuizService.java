@@ -5,6 +5,7 @@ import com.example.demo.model.*;
 import com.example.demo.model.xml.Translation;
 import com.example.demo.model.xml.Type;
 import com.example.demo.model.xml.Word;
+import com.example.demo.results.Result;
 import com.example.demo.words.SearchedWord;
 import com.example.demo.words.SearchedWordService;
 import com.example.demo.words.WordsService;
@@ -144,7 +145,8 @@ public class QuizService {
             quizQuestion.setCorrectAnswer(correctAnswerNumber);
             quizQuestions.add(quizQuestion);
         }
-        quiz.setQuizQuestions(quizQuestions);
+        quiz.getQuizQuestions().addAll(quizQuestions);
+
     }
 
     // TODO quizy ze znaczeniami
@@ -177,16 +179,45 @@ public class QuizService {
         return quote;
     }
 
-    public List<Boolean> calculateResults(Quiz quiz, QuizAnswers quizAnswers) {
-        // TODO po przeniesieniu z kontrolera - do zastanowienia czy aktualna wersja bedzie do czegos przydatna
-        List<Integer> correctAnswers = quiz.getQuizQuestions().stream()
-                .map(question -> question.getCorrectAnswer()).toList();
-        List<Integer> answersFromUser = quizAnswers.getAnswers();
-        List<Boolean> results = new ArrayList<>();
-        for (int i = 0; i < correctAnswers.size(); i++) {
-            results.add(correctAnswers.get(i).equals(answersFromUser.get(i)));
+    // slowo - wybrana odpowiedz (czerwona/zielona) - prawidlowa odpowiedz (tylko jesli wybrana jest zla)
+    // results -> wyniki true/false -> wyswietlanie prawidlowej odpowiedzi jesli false + kolorki
+    // quiz -> z quizQuestion wyciagamy prawidlowa odpowiedz na podstawie correctAnswer (numer) i answers (lista)
+    // quizAnswers -> wybrane odpowiedzi przez uzytkownika (numery) -> slowa do wyciagniecia z answers z quiz'u
+
+    /**
+     * TODO
+     *  List<Integer> answers = quizAnswers.getAnswers();
+     */
+    public Result calculateResults(Quiz quiz, QuizAnswers quizAnswers) {
+
+        List<String> questions = new ArrayList<>();
+        List<String> userAnswers = new ArrayList<>();
+        List<String> correctAnswers = new ArrayList<>();
+
+        List<Integer> answers = quizAnswers.getAnswers();
+        List<QuizQuestion> quizQuestions = quiz.getQuizQuestions();
+        int counter = 0;
+        for (int i = 0; i < quizQuestions.size(); i++) {
+            QuizQuestion quizQuestion = quizQuestions.get(i);
+            questions.add(quizQuestion.getWord());
+            List<String> quizQuestionAnswers = quizQuestion.getAnswers();
+            Integer userAnswerNumber = answers.get(i);
+            int correctAnswerNumber = quizQuestion.getCorrectAnswer();
+            if (userAnswerNumber.equals(correctAnswerNumber)) {
+                correctAnswers.add("");
+                counter += 1;
+            } else {
+                correctAnswers.add(quizQuestionAnswers.get(correctAnswerNumber));
+            }
+            if (userAnswerNumber == -1) {
+                userAnswers.add("-");
+            } else {
+                String userAnswer = quizQuestionAnswers.get(userAnswerNumber);
+                userAnswers.add(userAnswer);
+            }
         }
 
-        return results;
+        Result result = new Result(questions, userAnswers, correctAnswers, counter);
+        return result;
     }
 }

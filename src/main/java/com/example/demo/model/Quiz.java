@@ -1,6 +1,7 @@
 package com.example.demo.model;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -12,6 +13,7 @@ import java.util.List;
  */
 @Data
 @Entity(name = "quizzes")
+@NoArgsConstructor
 public class Quiz {
 
     @Id
@@ -23,10 +25,6 @@ public class Quiz {
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "quiz_id") // kolumna z tablicy quiz
     private List<QuizQuestion> quizQuestions;
-
-    public Quiz() {
-
-    }
 
     public Quiz(QuizType quizType, QuizDataType quizDataType) {
         this.quizType = quizType;
